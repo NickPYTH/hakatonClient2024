@@ -1,18 +1,21 @@
 import {combineReducers, configureStore} from "@reduxjs/toolkit";
 import {userAPI} from "../service/UserService";
 import userSlice, {CurrentUserModelStateType} from "./slice/UserSlice";
-import {logAPI} from "../service/LogService";
 import {authAPI} from "../service/AuthService";
+import roleSlice, {RoleModelStateType} from "./slice/RoleSlice";
+import {roleAPI} from "../service/RoleService";
 
 export type RootStateType = {
-    currentUser: CurrentUserModelStateType
+    currentUser: CurrentUserModelStateType,
+    roles: RoleModelStateType,
 };
 
 const rootReducer = combineReducers({
     currentUser: userSlice,
+    roles: roleSlice,
     [userAPI.reducerPath]: userAPI.reducer,
-    [logAPI.reducerPath]: logAPI.reducer,
     [authAPI.reducerPath]: authAPI.reducer,
+    [roleAPI.reducerPath]: roleAPI.reducer,
 })
 
 export const setupStore = () => {
@@ -21,8 +24,8 @@ export const setupStore = () => {
         middleware: (getDefaultMiddleware) =>
             getDefaultMiddleware()
                 .concat(userAPI.middleware)
-                .concat(logAPI.middleware)
                 .concat(authAPI.middleware)
+                .concat(roleAPI.middleware)
     })
 }
 

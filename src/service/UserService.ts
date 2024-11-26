@@ -1,50 +1,54 @@
 import {createApi, fetchBaseQuery} from "@reduxjs/toolkit/dist/query/react";
+import {host, port, secure} from "../config/constants";
 import {UserModel} from "../model/UserModel";
-import {host} from "../config/constants";
 
 export const userAPI = createApi({
     reducerPath: 'userAPI',
-    baseQuery: fetchBaseQuery({
-        baseUrl: `${host}/hotels/api/user`,
-    }),
-    tagTypes: ['user'],
+    baseQuery: fetchBaseQuery(
+        {
+            baseUrl: `${secure}://${host}${port}/users`,
+            prepareHeaders: (headers, {getState}) => {
+                headers.set('authorization', `Bearer ${localStorage.getItem('token')}`)
+                return headers
+            },
+        }
+    ),
+    tagTypes: ['User'],
     endpoints: (build) => ({
-        create: build.mutation<UserModel, UserModel>({
-            query: (body) => ({
+        getUsers: build.mutation<UserModel[], void>({
+            query: () => ({
+                url: `/all`,
+                method: 'GET',
+            }),
+            invalidatesTags: ['User']
+        }),
+        createUser: build.mutation<any, UserModel>({
+            query: (post) => ({
                 url: `/create`,
                 method: 'POST',
-                body
+                body: post
             }),
-            invalidatesTags: ['user']
+            invalidatesTags: ['User']
         }),
-        update: build.mutation<UserModel, UserModel>({
-            query: (body) => ({
+        updateUser: build.mutation<any, UserModel>({
+            query: (post) => ({
                 url: `/update`,
                 method: 'POST',
-                body
+                body: post
             }),
-            invalidatesTags: ['user']
+            invalidatesTags: ['User']
         }),
-        updateRole: build.mutation<UserModel, number>({
-            query: (roleId) => ({
-                url: `/updateRole?roleId=${roleId}`,
-                method: 'POST',
+        deleteUser: build.mutation<string, string>({
+            query: (username) => ({
+                url: `/${username}`,
+                method: 'DELETE',
             }),
-            invalidatesTags: ['user']
-        }),
-        getCurrent: build.mutation<UserModel, void>({
-            query: () => ({
-                url: `/getCurrent`,
-                method: 'GET',
-            }),
-            invalidatesTags: ['user']
-        }),
-        getAll: build.mutation<UserModel[], void>({
-            query: () => ({
-                url: `/getAll`,
-                method: 'GET',
-            }),
-            invalidatesTags: ['user']
+            transformErrorResponse: (
+                response: { status: string | number },
+                meta,
+                arg
+            ) => response.status,
+            invalidatesTags: ['User']
         }),
     })
 });
