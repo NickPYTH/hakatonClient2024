@@ -2,6 +2,7 @@ import {BrowserRouter, Route, Routes} from 'react-router-dom'
 import React from "react";
 import {Navbar} from "./Navbar";
 import UserScreen from "../screen/admin/UserScreen";
+import { LoginScreen } from '../screen/LoginScreen';
 
 export const Router = () => {
     return (
@@ -9,12 +10,16 @@ export const Router = () => {
             <Navbar/>
             <Routes>
                 <Route
-                    path='hakaton/users'
+                    path='/login'
+                    element={<LoginScreen/>}
+                />
+                <Route
+                    path='/admin/users'
                     element={<UserScreen/>}
                 />
                 <Route
                     path='*'
-                    element={<div>404</div>}
+                    element={<div>четыреста четыре нот фаунд))</div>}
                 />
             </Routes>
         </BrowserRouter>)

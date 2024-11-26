@@ -3,28 +3,40 @@ import {Button, Flex, Spin, Table, TableProps} from 'antd';
 import {userAPI} from "../../service/UserService";
 import {UserModel} from "../../model/UserModel";
 import {RootStateType} from "../../store/store";
-import {useNavigate} from 'react-router-dom';
+import {Navigate, useNavigate} from 'react-router-dom';
 import {useSelector} from 'react-redux';
+import {authAPI} from "../../service/AuthService";
+import {Navbar} from "../../component/Navbar";
 
 const UserScreen: React.FC = () => {
     const navigate = useNavigate();
     const currentUser = useSelector((state: RootStateType) => state.currentUser.user);
-    console.log(currentUser.roleId)
-    if (currentUser.roleId !== 1 && currentUser.roleId !== 999) navigate(`../hotels/`);
+    const [redirectToLogin, setRedirectToLogin] = useState<boolean>(false);
     const [visible, setVisible] = useState(false);
     const [selectedUser, setSelectedUser] = useState<UserModel | null>(null);
     const [getAll, {
         data: users,
         isLoading: isUsersLoading
     }] = userAPI.useGetAllMutation();
-
+    // Return to login if reject token verify
+    const [verifyTokenRequest, {status: statusVerifyTokenRequest}] = authAPI.useVerifyTokenMutation();
     useEffect(() => {
-        getAll();
-    }, []);
+        verifyTokenRequest();
+    }, [])
+    useEffect(() => {
+        if (statusVerifyTokenRequest === 'rejected') {
+            setRedirectToLogin(true);
+        }
+    }, [statusVerifyTokenRequest])
+    // -----
+    useEffect(() => {
+        const token: string | null = localStorage.getItem('token');
+        if (token) getAll();
+        else setRedirectToLogin(true);
+    }, [])
     useEffect(() => {
         if (!visible) setSelectedUser(null);
     }, [visible]);
-
     const columns: TableProps<UserModel>['columns'] = [
         {
             title: 'ИД',
@@ -97,32 +109,34 @@ const UserScreen: React.FC = () => {
             filterSearch: true,
         },
     ]
-
     if (isUsersLoading)
         return <div
             style={{display: 'flex', justifyContent: 'center', alignItems: 'center', height: '90vh', width: '100vw'}}>
             <Spin size={'large'}/>
         </div>
     return (
-        <Flex vertical={true}>
-            <Button type={'primary'} onClick={() => setVisible(true)} style={{width: 100, margin: 10}}>Добавить</Button>
-            <Table
-                style={{width: '100vw'}}
-                columns={columns}
-                dataSource={users}
-                onRow={(record, rowIndex) => {
-                    return {
-                        onDoubleClick: (e) => {
-                            setVisible(true);
-                            setSelectedUser(record);
-                        },
-                    };
-                }}
-                pagination={{
-                    defaultPageSize: 100,
-                }}
-            />
-        </Flex>
+        <>
+            <Flex vertical={true}>
+                {redirectToLogin && <Navigate to="/login" replace={false}/>}
+                <Button type={'primary'} onClick={() => setVisible(true)} style={{width: 100, margin: 10}}>Добавить</Button>
+                <Table
+                    style={{width: '100vw'}}
+                    columns={columns}
+                    dataSource={users}
+                    onRow={(record, rowIndex) => {
+                        return {
+                            onDoubleClick: (e) => {
+                                setVisible(true);
+                                setSelectedUser(record);
+                            },
+                        };
+                    }}
+                    pagination={{
+                        defaultPageSize: 100,
+                    }}
+                />
+            </Flex>
+        </>
     );
 };
 

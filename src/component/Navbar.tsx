@@ -1,177 +1,84 @@
-import React, {useEffect, useState} from 'react';
+import React, {useState} from 'react';
 import type {MenuProps} from 'antd';
 import {Menu} from 'antd';
-import {useLocation, useNavigate} from "react-router-dom";
-import {userAPI} from "../service/UserService";
-import {useDispatch, useSelector} from "react-redux";
-import {setCurrentUser} from "../store/slice/UserSlice";
-import {RootStateType} from "../store/store";
-type propsType = {}
-export const Navbar = (props: propsType) => {
-    const [items, setItems] = useState<MenuProps['items']>([]);
-    const dispatch = useDispatch();
-    const currentUser = useSelector((state: RootStateType) => state.currentUser.user);
-    const navigate = useNavigate();
-    const location = useLocation();
-    const [getCurrentUser, {
-        data: currentUserData,
-        isLoading: isCurrentUserLoading
-    }] = userAPI.useGetCurrentMutation();
-    useEffect(() => {
-        getCurrentUser();
-    }, []);
-    useEffect(() => {
-        if (currentUserData) {
-            setItems([
-                {
-                    label: 'Филиалы',
-                    key: 'filials',
-                },
-                {
-                    label: 'Справочники',
-                    key: 'dicts',
-                    children: [
-                        {
-                            label: 'Жильцы',
-                            key: 'guests',
-                        },
-                        {
-                            label: 'Договоры',
-                            key: 'contracts',
-                        },
-                        {
-                            label: 'Организации',
-                            key: 'organizations',
-                        },
-                        {
-                            label: 'Ответственные лица',
-                            key: 'responsibilities',
-                        },
-                        {
-                            label: 'Основания',
-                            key: 'reasons',
-                        },
-                    ]
-                },
-                {
-                    label: 'Отчеты',
-                    key: 'reports',
-                    children: [
-                        {
-                            label: 'Ежемесячный отчет по филиалам',
-                            key: 'monthReport',
-                        },
-                    ]
-                },
-                {
-                    label: 'Администрирование',
-                    key: 'adm',
-                    children: [
-                        {
-                            label: 'Пользователи',
-                            key: 'users',
-                        },
-                    ]
-                },
-            ]);
-            if (currentUserData.roleId === 1) {
-                setItems([
-                    {
-                        label: 'Филиалы',
-                        key: 'filials',
-                    },
-                    {
-                        label: 'Справочники',
-                        key: 'dicts',
-                        children: [
-                            {
-                                label: 'Жильцы',
-                                key: 'guests',
-                            },
-                            {
-                                label: 'Договоры',
-                                key: 'contracts',
-                            },
-                            {
-                                label: 'Организации',
-                                key: 'organizations',
-                            },
-                            {
-                                label: 'Ответственные лица',
-                                key: 'responsibilities',
-                            },
-                            {
-                                label: 'Основания',
-                                key: 'reasons',
-                            },
-                        ]
-                    },
-                    {
-                        label: 'Отчеты',
-                        key: 'reports',
-                        children: [
-                            {
-                                label: 'Ежемесячный отчет по филиалам',
-                                key: 'monthReport',
-                            },
-                        ]
-                    },
-                    {
-                        label: 'Администрирование',
-                        key: 'adm',
-                        children: [
-                            {
-                                label: 'Пользователи',
-                                key: 'users',
-                            },
-                        ]
-                    },
-                ]);
-            } else if (currentUserData.roleId === 2) {
-                setItems([
-                    {
-                        label: 'Общежития',
-                        key: 'hotels',
-                    },
-                ]);
-            }
-            // if (location.pathname === "/hotels/users") navigate(`/hotels/users`);
-            // if (location.pathname === "/hotels/hotels") navigate(`/hotels/hotels`)
-            // if (location.pathname.includes('guests')) navigate(`/hotels/guests`)
-            // if (location.pathname.includes('filials')) navigate(`/hotels/filials`)
-            // if (location.pathname.includes('hotels')) navigate(`/hotels/filials`)
-            dispatch(setCurrentUser(currentUserData))
+import {Link} from "react-router-dom";
+import {LogoutOutlined} from '@ant-design/icons';
+enum ROUTES {
+    USERS = 'users',
+    FILIALS = 'filials',
+    EQUIPMENTS = 'equipments',
+    OBJECTS = 'objects',
+    REQUESTS = 'requests',
+    LOGOUT = 'logout',
+    WIDGETS = 'widgets'
+}
+const items: MenuProps['items'] = [
+    {
+        label: (
+            <Link to={'/admin/users'}>Пользователи</Link>
+        ),
+        key: ROUTES.USERS,
+    },
+    {
+        label: (
+            <Link to={'/filials'}>Филиалы</Link>
+        ),
+        key: ROUTES.FILIALS,
+    },
+    {
+        label: (
+            <Link to={'/objects'}>Объекты</Link>
+        ),
+        key: ROUTES.OBJECTS,
+    },
+    {
+        label: (
+            <Link to={'/equipments'}>Оборудование</Link>
+        ),
+        key: ROUTES.EQUIPMENTS,
+    },
+    {
+        label: (
+            <Link to={'/requests'}>Заявки</Link>
+        ),
+        key: ROUTES.REQUESTS,
+    },
+    {
+        label: (
+            <Link to={'/widgets'}>Виджеты</Link>
+        ),
+        key: ROUTES.WIDGETS,
+    },
+    {
+        label: (
+            <Link to={'/login'}>Выйти</Link>
+        ),
+        key: ROUTES.LOGOUT,
+        icon: <LogoutOutlined />,
+    },
+];
+export const Navbar: React.FC = () => {
+    const [current, setCurrent] = useState<ROUTES>(() => {
+        switch (document.location.pathname.slice(1)) {
+            case ROUTES.USERS:
+                return ROUTES.USERS
+            case ROUTES.FILIALS:
+                return ROUTES.FILIALS
+            case ROUTES.EQUIPMENTS:
+                return ROUTES.EQUIPMENTS
+            case ROUTES.OBJECTS:
+                return ROUTES.OBJECTS
+            case ROUTES.REQUESTS:
+                return ROUTES.REQUESTS
+            case ROUTES.WIDGETS:
+                return ROUTES.WIDGETS
+            default:
+                return ROUTES.USERS
         }
-    }, [currentUserData]);
-    const [current, setCurrent] = useState(() => {
-        if (location.pathname === "/hotels/reasons") return 'reasons';
-        if (location.pathname === "/hotels/responsibilities") return 'responsibilities';
-        if (location.pathname === "/hotels/organizations") return 'organizations';
-        if (location.pathname === "/hotels/contracts") return 'contracts';
-        if (location.pathname === "/hotels/users") return 'users';
-        if (location.pathname === "/hotels/hotels") return 'hotels';
-        if (location.pathname.includes('guests')) return 'guests';
-        if (location.pathname.includes('filials')) return 'filials';
-        if (location.pathname.includes('hotels')) return 'filials';
-        return "";
     });
-    const [visibleMonthReport, setVisibleMonthReport] = useState(false);
-    const onClick: MenuProps['onClick'] = (e) => {
-        setCurrent(e.key);
-        if (e.key === 'monthReport') {
-            setVisibleMonthReport(true);
-        }
-        if (e.key === 'reasons') navigate(`hotels/reasons`)
-        if (e.key === 'contracts') navigate(`hotels/contracts`)
-        if (e.key === 'filials') navigate(`hotels/filials`)
-        if (e.key === 'hotels') navigate(`hotels/hotels`)
-        if (e.key === 'guests') navigate(`hotels/guests`)
-        if (e.key === 'users') navigate(`hotels/users`)
-        if (e.key === 'organizations') navigate(`hotels/organizations`)
-        if (e.key === 'responsibilities') navigate(`hotels/responsibilities`)
+    const onClick = (e: any) => {
+        if (e.key === 'logout') localStorage.clear();
+        setCurrent(e.key)
     };
-    return (<>
-            <Menu disabled={isCurrentUserLoading} onClick={onClick} selectedKeys={[current]} mode="horizontal" items={items}/>
-        </>
-    );
+    return <Menu onClick={onClick} selectedKeys={[current]} mode="horizontal" items={items}/>;
 };

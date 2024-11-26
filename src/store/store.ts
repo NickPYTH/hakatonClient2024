@@ -2,6 +2,7 @@ import {combineReducers, configureStore} from "@reduxjs/toolkit";
 import {userAPI} from "../service/UserService";
 import userSlice, {CurrentUserModelStateType} from "./slice/UserSlice";
 import {logAPI} from "../service/LogService";
+import {authAPI} from "../service/AuthService";
 
 export type RootStateType = {
     currentUser: CurrentUserModelStateType
@@ -11,6 +12,7 @@ const rootReducer = combineReducers({
     currentUser: userSlice,
     [userAPI.reducerPath]: userAPI.reducer,
     [logAPI.reducerPath]: logAPI.reducer,
+    [authAPI.reducerPath]: authAPI.reducer,
 })
 
 export const setupStore = () => {
@@ -20,6 +22,7 @@ export const setupStore = () => {
             getDefaultMiddleware()
                 .concat(userAPI.middleware)
                 .concat(logAPI.middleware)
+                .concat(authAPI.middleware)
     })
 }
 

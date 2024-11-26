@@ -1,2 +1,4 @@
 let prod = false;
-export const host = prod ? 'https://sco1-vapp-04.sgp.ru' : 'http://localhost:8080';
+export const host = prod ? '' : 'localhost';
+export const port = prod ? '' : ':8080/api';
+export const secure = prod ? '' : 'http';

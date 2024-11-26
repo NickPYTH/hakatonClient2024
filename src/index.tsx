@@ -18,14 +18,13 @@ ReactDOM.render(
                 theme={{
                     components: {
                         Table: {
-                            cellPaddingInline: 0,
-                            cellPaddingBlock: 5
+                            cellPaddingInline: 7,
+                            cellPaddingBlock: 7
                         }
                     }
                 }}
             >
                 <Router/>
-                hui
             </ConfigProvider>
         </Provider>
     </React.StrictMode>,
