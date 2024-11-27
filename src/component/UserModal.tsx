@@ -112,7 +112,7 @@ export const UserModal = (props: ModalProps) => {
                     <Select
                         value={selectedRole}
                         placeholder={"Выберите роль"}
-                        style={{width: 397}}
+                        style={{width: '100%'}}
                         onChange={(id) => setSelectedRole(id)}
                         options={roles.map((role: RoleModel) => ({value: role.id, label: role.name}))}
                     />
