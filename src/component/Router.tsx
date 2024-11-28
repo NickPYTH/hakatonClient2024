@@ -2,9 +2,12 @@ import {BrowserRouter, Route, Routes} from 'react-router-dom'
 import React from "react";
 import {Navbar} from "./Navbar";
 import UserScreen from "../screen/admin/UserScreen";
-import { LoginScreen } from '../screen/LoginScreen';
-import RequestScreen from "../screen/RequestScreen";
+import {LoginScreen} from '../screen/LoginScreen';
+import RequestScreen from "../screen/admin/RequestScreen";
 import {ClientScreen} from "../screen/ClientScreen";
+import TypeScreen from "../screen/admin/TypeScreen";
+import StatusScreen from "../screen/admin/StatusScreen";
+import PriorityScreen from "../screen/admin/PriorityScreen";
 
 export const Router = () => {
     return (
@@ -30,6 +33,18 @@ export const Router = () => {
                 <Route
                     path='/admin/requests'
                     element={<RequestScreen/>}
+                />
+                <Route
+                    path='/admin/types'
+                    element={<TypeScreen/>}
+                />
+                <Route
+                    path='/admin/statuses'
+                    element={<StatusScreen/>}
+                />
+                <Route
+                    path='/admin/priorities'
+                    element={<PriorityScreen/>}
                 />
                 <Route
                     path='*'

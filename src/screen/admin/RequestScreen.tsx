@@ -1,16 +1,16 @@
 import React, {useEffect, useState} from 'react';
 import {Button, Flex, Popconfirm, Spin, Table, TableProps} from 'antd';
 import {Navigate} from 'react-router-dom';
-import {RequestModel} from "../model/RequestModel";
-import {requestAPI} from "../service/RequestService";
-import {authAPI} from "../service/AuthService";
+import {RequestModel} from "../../model/RequestModel";
+import {requestAPI} from "../../service/RequestService";
+import {authAPI} from "../../service/AuthService";
 import {
     generateModelColumn,
     generateNumberColumn,
     generateStringColumn,
     SORT_ORDER
-} from "../config/columnFieldGenerator";
-import {RequestModal} from "../component/RequestModal";
+} from "../../config/columnFieldGenerator";
+import {RequestModal} from "../../component/RequestModal";
 
 const RequestScreen: React.FC = () => {
     const [redirectToLogin, setRedirectToLogin] = useState<boolean>(false);

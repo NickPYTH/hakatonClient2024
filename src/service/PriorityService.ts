@@ -22,5 +22,28 @@ export const priorityAPI = createApi({
             }),
             invalidatesTags: ['Priority']
         }),
+        create: build.mutation<PriorityModel, PriorityModel>({
+            query: (body) => ({
+                url: `/create`,
+                method: 'POST',
+                body
+            }),
+            invalidatesTags: ['Priority']
+        }),
+        update: build.mutation<PriorityModel, PriorityModel>({
+            query: (body) => ({
+                url: `/update`,
+                method: 'POST',
+                body
+            }),
+            invalidatesTags: ['Priority']
+        }),
+        delete: build.mutation<PriorityModel, number>({
+            query: (id) => ({
+                url: `/delete?id=${id}`,
+                method: 'DELETE',
+            }),
+            invalidatesTags: ['Priority']
+        }),
     })
 });

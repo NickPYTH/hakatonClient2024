@@ -22,5 +22,28 @@ export const typeAPI = createApi({
             }),
             invalidatesTags: ['Type']
         }),
+        create: build.mutation<TypeModel, TypeModel>({
+            query: (body) => ({
+                url: `/create`,
+                method: 'POST',
+                body
+            }),
+            invalidatesTags: ['Type']
+        }),
+        update: build.mutation<TypeModel, TypeModel>({
+            query: (body) => ({
+                url: `/update`,
+                method: 'POST',
+                body
+            }),
+            invalidatesTags: ['Type']
+        }),
+        delete: build.mutation<TypeModel, number>({
+            query: (id) => ({
+                url: `/delete?id=${id}`,
+                method: 'DELETE',
+            }),
+            invalidatesTags: ['Type']
+        }),
     })
 });

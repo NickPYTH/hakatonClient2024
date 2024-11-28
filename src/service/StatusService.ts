@@ -22,5 +22,28 @@ export const statusAPI = createApi({
             }),
             invalidatesTags: ['Status']
         }),
+        create: build.mutation<StatusModel, StatusModel>({
+            query: (body) => ({
+                url: `/create`,
+                method: 'POST',
+                body
+            }),
+            invalidatesTags: ['Status']
+        }),
+        update: build.mutation<StatusModel, StatusModel>({
+            query: (body) => ({
+                url: `/update`,
+                method: 'POST',
+                body
+            }),
+            invalidatesTags: ['Status']
+        }),
+        delete: build.mutation<StatusModel, number>({
+            query: (id) => ({
+                url: `/delete?id=${id}`,
+                method: 'DELETE',
+            }),
+            invalidatesTags: ['Status']
+        }),
     })
 });

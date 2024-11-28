@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import {Flex, Menu, MenuProps, Spin} from 'antd';
-import {Link, useLocation, useNavigate} from "react-router-dom";
+import {Link, useLocation} from "react-router-dom";
 import {LogoutOutlined} from '@ant-design/icons';
 import {useDispatch, useSelector} from "react-redux";
 import {roleAPI} from "../service/RoleService";
@@ -16,8 +16,11 @@ import {setCurrentUser, setUsers} from "../store/slice/UserSlice";
 import {RootStateType} from "../store/store";
 
 enum ROUTES {
-    REQUESTS = 'requests',
-    USERS = 'users',
+    REQUESTS = 'admin/requests',
+    USERS = 'admin/users',
+    STATUSES = 'admin/statuses',
+    TYPES = 'admin/types',
+    PRIORITIES = 'admin/priorities',
     LOGOUT = 'logout',
 }
 export const Navbar = () => {
@@ -27,15 +30,39 @@ export const Navbar = () => {
     const items: MenuProps['items'] = [
         {
             label: (
-                <Link to={'/admin/requests'}>Заявки</Link>
+                <Link to={ROUTES.USERS}>Пользователи</Link>
+            ),
+            key: ROUTES.USERS,
+        },
+        {
+            label: (
+                <Link to={ROUTES.REQUESTS}>Заявки</Link>
             ),
             key: ROUTES.REQUESTS,
         },
         {
-            label: (
-                <Link to={'/admin/users'}>Пользователи</Link>
-            ),
-            key: ROUTES.USERS,
+            label: "Справочники",
+            key: "dicts",
+            children: [
+                {
+                    label: (
+                        <Link to={ROUTES.STATUSES}>Статусы заявок</Link>
+                    ),
+                    key: ROUTES.STATUSES,
+                },
+                {
+                    label: (
+                        <Link to={ROUTES.PRIORITIES}>Приоритеты заявок</Link>
+                    ),
+                    key: ROUTES.PRIORITIES,
+                },
+                {
+                    label: (
+                        <Link to={ROUTES.TYPES}>Типы заявок</Link>
+                    ),
+                    key: ROUTES.TYPES,
+                },
+            ]
         },
         {
             label: (
@@ -96,9 +123,12 @@ export const Navbar = () => {
         if (currentUserFromRequest) dispatch(setCurrentUser(currentUserFromRequest));
     }, [currentUserFromRequest]);
     const [current, setCurrent] = useState<ROUTES>(() => {
+        console.log(document.location.pathname.slice(1))
         switch (document.location.pathname.slice(1)) {
             case ROUTES.USERS:
                 return ROUTES.USERS
+            case ROUTES.REQUESTS:
+                return ROUTES.REQUESTS
             default:
                 return ROUTES.USERS
         }
