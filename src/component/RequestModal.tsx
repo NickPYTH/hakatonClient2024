@@ -51,7 +51,7 @@ export const RequestModal = (props: ModalProps) => {
             setSelectedPriority(props.selectedRequest.priority.id);
             setSelectedType(props.selectedRequest.type.id);
             setSelectedClient(props.selectedRequest.client.id);
-            setSelectedAssistant(props.selectedRequest.id);
+            setSelectedAssistant(props.selectedRequest.assistant.id);
             setSelectedExecutor(props.selectedRequest.executor.id);
             setCreateDate(dayjs(props.selectedRequest.createDate, dateTimeFormat));
             setDeadlineDate(dayjs(props.selectedRequest.deadlineDate, dateTimeFormat));

@@ -1,29 +1,30 @@
 import React, {useState} from "react";
-import {Card, Tag} from "antd";
+import {Button, Card, Flex} from "antd";
 import {Navigate} from "react-router-dom";
-import {StatusModel} from "../model/StatusModel";
+import {isMobile} from "react-device-detect";
+import {RequestModel} from "../model/RequestModel";
 
 type ModalProps = {
-    id: number,
-    name: string,
-    date: string,
-    status: StatusModel,
+    request: RequestModel,
+    setSelectedRequest: Function,
+    setVisibleRequestModal: Function
 }
 export const RequestCard = (props: ModalProps) => {
-    const [redirectToViewTask, setRedirectToViewTask] = useState<boolean>(false);
     return (
-        <Card onClick={() => setRedirectToViewTask(true)} title={props.name} size="small">
-            {redirectToViewTask && <Navigate to={`/my/request/${props.id}`} replace={false}/>}
-            <div style={{display: 'flex', justifyContent: "space-between", alignItems: 'center'}}>
-                <p>
-                    <div>
-                        Дата создания: {props.date}
-                    </div>
-                    {props.status.id === 1 && <Tag color={'green'}>Создано</Tag>}
-                    {props.status.id === 2 && <Tag color={'processing'}>В работе</Tag>}
-                    {props.status.id === 3 && <Tag color={'magenta'}>Выполнена</Tag>}
-                </p>
-            </div>
+        <Card style={{width: isMobile ? window.innerWidth-50 : 350, marginBottom: 10}} title={props.request.name} size="small">
+            <Flex vertical>
+                <div><strong>ИД заявки</strong>: {props.request.id}</div>
+                <div><strong>Описание</strong>: {props.request.description}</div>
+                <div><strong>Дата создания:</strong> {props.request.createDate}</div>
+                <div><strong>Исполнитель</strong>: {`${props.request.executor.surname} ${props.request.executor.name[0]}. ${props.request.executor.secondName[0]}`}.</div>
+                <Button type={'primary'} style={{width: 130, marginTop: 15}}
+                        onClick={() => {
+                            props.setSelectedRequest(props.request);
+                            props.setVisibleRequestModal(true);
+                        }}>
+                    Открыть
+                </Button>
+            </Flex>
         </Card>
     )
 }

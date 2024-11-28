@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {FloatButton, Menu, MenuProps, Segmented, Space, Spin} from "antd";
+import {Flex, FloatButton, Menu, MenuProps, Segmented, Space, Spin} from "antd";
 import {Navigate} from "react-router-dom";
 import {EditOutlined, FilterOutlined, LogoutOutlined, RedoOutlined} from "@ant-design/icons";
 import {authAPI} from "../service/AuthService";
@@ -9,6 +9,8 @@ import {RequestCard} from "../component/RequestCard";
 import {useSelector} from "react-redux";
 import {RootStateType} from "../store/store";
 import {StatusModel} from "../model/StatusModel";
+import {isMobile} from 'react-device-detect';
+import {RequestModal} from "../component/RequestModal";
 
 export const ClientScreen = () => {
     const statuses = useSelector((state: RootStateType) => state.statuses.statuses);
@@ -16,6 +18,8 @@ export const ClientScreen = () => {
     const [redirectToLogin, setRedirectToLogin] = useState<boolean>(false);
     const [currentMenuItem, setCurrentMenuItem] = useState<number>(1);
     const [currentTopMenuItem, setCurrentTopMenuItem] = useState('mail');
+    const [visibleRequestModal, setVisibleRequestModal] = useState(false);
+    const [selectedRequest, setSelectedRequest] = useState<RequestModel | null>(null);
     const [getMyRequests, {
         data: requestsFromRequest,
         isLoading: isRequestsLoading,
@@ -35,7 +39,7 @@ export const ClientScreen = () => {
     }, [statusVerifyTokenRequest])
     // -----
     useEffect(() => {
-        if (requestsFromRequest) setRequests(requestsFromRequest);
+        if (requestsFromRequest) setRequests((prev:RequestModel[]) => requestsFromRequest?.filter((request:RequestModel) => request.status.id === 1));
     }, [requestsFromRequest]);
     const [filterModalVisible, setFilterModalVisible] = useState<boolean>(false);
     const topNavigationItems: MenuProps['items'] = [
@@ -75,19 +79,14 @@ export const ClientScreen = () => {
         if (currentMenuItem === 3) setRequests((prev:RequestModel[]) => requestsFromRequest?.filter((request:RequestModel) => request.status.id === 3) ?? []);
     }, [currentMenuItem]);
     return (
-        <>
+        <div style={{minHeight: window.innerHeight}}>
             {redirectToLogin && <Navigate to="/login" replace={false}/>}
-            {redirectToCreateTask && <Navigate to="/my/createTask" replace={false}/>}
-            {/*{filterModalVisible &&*/}
-            {/*    <FilterModal filterByFilial={filterByFilial} filterByObject={filterByObject}*/}
-            {/*                 tasks={dataGetMyTasksRequest ?? []} setFilterByFilial={setFilterByFilial}*/}
-            {/*                 setFilterByObject={setFilterByObject}*/}
-            {/*                 visible={filterModalVisible} setVisible={setFilterModalVisible}/>}*/}
+            {visibleRequestModal && <RequestModal selectedRequest={selectedRequest} visible={visibleRequestModal} setVisible={setVisibleRequestModal} refresh={getMyRequests} />}
             <Menu className="centeredItemsTop" style={{marginBottom: 5, display: 'flex', justifyContent: 'center'}}
                   defaultValue={'filter'} onClick={tonTopNavigationClick}
                   selectedKeys={[currentTopMenuItem]} mode="horizontal" items={topNavigationItems}/>
             <div className="centeredItemsTop" style={{marginBottom: 5}}>
-                <Segmented onChange={(e:any) => {
+                <Segmented value={currentMenuItem} onChange={(e:any) => {
                     setCurrentMenuItem(e)
                 }} size={'middle'} block style={{width: '100%'}} options={statuses.map((status:StatusModel) => ({value: status.id, label: status.name}))}/>
             </div>
@@ -98,14 +97,29 @@ export const ClientScreen = () => {
                         <Spin size={'large'}/>
                     </div>
                     :
-                    requests?.map((request:RequestModel) =>
-                        <RequestCard id={request.id} name={request.name} date={request.createDate} status={request.status} />
-                    )
+                    <>{!isMobile ?
+                        <Flex wrap={true} justify={'space-around'}>
+                            {requests?.map((request:RequestModel) =>
+                                <RequestCard setVisibleRequestModal={setVisibleRequestModal}
+                                             setSelectedRequest={setSelectedRequest}
+                                             request={request}/>                            )}
+                        </Flex>
+                            :
+                        <Flex justify={'center'} vertical align={'center'}>
+                            {requests?.map((request:RequestModel) =>
+                                <RequestCard setVisibleRequestModal={setVisibleRequestModal}
+                                             setSelectedRequest={setSelectedRequest}
+                                             request={request}/>
+                            )}
+                        </Flex>
+                            }
+
+                    </>
                 }
             </Space>
             <FloatButton.Group shape="circle" style={{right: 24}}>
-                <FloatButton onClick={() => setRedirectToCreateTask(true)} type="primary" icon={<EditOutlined/>}/>
+                <FloatButton onClick={() => setVisibleRequestModal(true)} type="primary" icon={<EditOutlined/>}/>
             </FloatButton.Group>
-        </>
+        </div>
     );
 };
