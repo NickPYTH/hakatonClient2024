@@ -40,7 +40,7 @@ export const requestAPI = createApi({
         }),
         delete: build.mutation<RequestModel, number>({
             query: (id) => ({
-                url: `/delete?Id=${id}`,
+                url: `/delete?id=${id}`,
                 method: 'DELETE',
             }),
             invalidatesTags: ['Request']

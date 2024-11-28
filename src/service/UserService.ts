@@ -22,6 +22,13 @@ export const userAPI = createApi({
             }),
             invalidatesTags: ['User']
         }),
+        getCurrentUser: build.mutation<UserModel, void>({
+            query: () => ({
+                url: `/me`,
+                method: 'GET',
+            }),
+            invalidatesTags: ['User']
+        }),
         createUser: build.mutation<any, UserModel>({
             query: (post) => ({
                 url: `/create`,

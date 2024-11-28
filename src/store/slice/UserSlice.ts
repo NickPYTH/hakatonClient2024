@@ -2,25 +2,12 @@ import {createSlice} from "@reduxjs/toolkit";
 import {UserModel} from "../../model/UserModel";
 
 export type CurrentUserModelStateType = {
-    user: UserModel,
+    user: UserModel | null,
     users: UserModel[]
 }
 
 const initialState: CurrentUserModelStateType = {
-    user: {
-        id: 0,
-        username: "",
-        password: "",
-        name: "",
-        surname: "",
-        secondName: "",
-        email: "",
-        phone: "",
-        role: {
-            id: 0,
-            name: ""
-        }
-    },
+    user: null,
     users: []
 }
 
@@ -28,7 +15,7 @@ const userSlice = createSlice({
     name: 'userSlice',
     initialState,
     reducers: {
-        setCurrentUser: (state, action: { type: string, payload: UserModel }) => {
+        setCurrentUser: (state, action: { type: string, payload: UserModel|null }) => {
             state.user = action.payload;
         },
         setUsers: (state, action: { type: string, payload: UserModel[] }) => {

@@ -4,6 +4,7 @@ import {Navbar} from "./Navbar";
 import UserScreen from "../screen/admin/UserScreen";
 import { LoginScreen } from '../screen/LoginScreen';
 import RequestScreen from "../screen/RequestScreen";
+import {ClientScreen} from "../screen/ClientScreen";
 
 export const Router = () => {
     return (
@@ -13,6 +14,10 @@ export const Router = () => {
                 <Route
                     path='/login'
                     element={<LoginScreen/>}
+                />
+                <Route
+                    path='/my'
+                    element={<ClientScreen/>}
                 />
                 <Route
                     path='/admin/users'
