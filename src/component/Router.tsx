@@ -16,6 +16,10 @@ export const Router = () => {
                     element={<LoginScreen/>}
                 />
                 <Route
+                    path='/'
+                    element={<LoginScreen/>}
+                />
+                <Route
                     path='/my'
                     element={<ClientScreen/>}
                 />
