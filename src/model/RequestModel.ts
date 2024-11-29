@@ -1,7 +1,7 @@
 import {StatusModel} from "./StatusModel";
 import {PriorityModel} from "./PriorityModel";
-import {TypeModel} from "./TypeModel";
 import {UserModel} from "./UserModel";
+import {SubTypeModel} from "./SubTypeModel";
 
 export type RequestModel = {
     id: number;
@@ -10,7 +10,7 @@ export type RequestModel = {
     solution: string;
     status: StatusModel;
     priority: PriorityModel;
-    type: TypeModel;
+    subType: SubTypeModel;
     client: UserModel;
     assistant: UserModel;
     executor: UserModel;

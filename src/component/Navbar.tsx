@@ -14,12 +14,15 @@ import {setTypes} from "../store/slice/TypeSlice";
 import {userAPI} from "../service/UserService";
 import {setCurrentUser, setUsers} from "../store/slice/UserSlice";
 import {RootStateType} from "../store/store";
+import {subTypeAPI} from "../service/SubTypeService";
+import {setSubTypes} from "../store/slice/SubTypeSlice";
 
 enum ROUTES {
     REQUESTS = 'admin/requests',
     USERS = 'admin/users',
     STATUSES = 'admin/statuses',
     TYPES = 'admin/types',
+    SUB_TYPES = 'admin/subtypes',
     PRIORITIES = 'admin/priorities',
     LOGOUT = 'logout',
 }
@@ -62,6 +65,12 @@ export const Navbar = () => {
                     ),
                     key: ROUTES.TYPES,
                 },
+                {
+                    label: (
+                        <Link to={ROUTES.SUB_TYPES}>Подтипы заявок</Link>
+                    ),
+                    key: ROUTES.SUB_TYPES,
+                },
             ]
         },
         {
@@ -88,6 +97,10 @@ export const Navbar = () => {
         data: typesFromRequest,
         isLoading: isGetTypesLoading
     }] = typeAPI.useGetAllMutation();
+    const [getSubTypes, {
+        data: subTypesFromRequest,
+        isLoading: isGetSubTypesLoading
+    }] = subTypeAPI.useGetAllMutation();
     const [getUsers, {
         data: usersFromRequest,
         isLoading: isGetUsersLoading
@@ -101,6 +114,7 @@ export const Navbar = () => {
         getRoles();
         getStatuses();
         getTypes();
+        getSubTypes();
         getPriorities();
         getUsers();
     }, [location]);
@@ -122,6 +136,9 @@ export const Navbar = () => {
     useEffect(() => {
         if (currentUserFromRequest) dispatch(setCurrentUser(currentUserFromRequest));
     }, [currentUserFromRequest]);
+    useEffect(() => {
+        if (subTypesFromRequest) dispatch(setSubTypes(subTypesFromRequest));
+    }, [subTypesFromRequest]);
     const [current, setCurrent] = useState<ROUTES>(() => {
         console.log(document.location.pathname.slice(1))
         switch (document.location.pathname.slice(1)) {
@@ -129,6 +146,14 @@ export const Navbar = () => {
                 return ROUTES.USERS
             case ROUTES.REQUESTS:
                 return ROUTES.REQUESTS
+            case ROUTES.STATUSES:
+                return ROUTES.STATUSES
+            case ROUTES.TYPES:
+                return ROUTES.TYPES
+            case ROUTES.SUB_TYPES:
+                return ROUTES.SUB_TYPES
+            case ROUTES.PRIORITIES:
+                return ROUTES.PRIORITIES
             default:
                 return ROUTES.USERS
         }

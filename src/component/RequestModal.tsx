@@ -10,6 +10,7 @@ import {TypeModel} from "../model/TypeModel";
 import {PriorityModel} from "../model/PriorityModel";
 import {UserModel} from "../model/UserModel";
 import {dateTimeFormat} from "../config/constants";
+import {SubTypeModel} from "../model/SubTypeModel";
 
 type ModalProps = {
     selectedRequest: RequestModel | null,
@@ -21,6 +22,7 @@ export const RequestModal = (props: ModalProps) => {
     const statuses = useSelector((state: RootStateType) => state.statuses.statuses);
     const priorities = useSelector((state: RootStateType) => state.priorities.priorities);
     const types = useSelector((state: RootStateType) => state.types.types);
+    const subTypes = useSelector((state: RootStateType) => state.subTypes.subTypes);
     const users = useSelector((state: RootStateType) => state.currentUser.users);
     const [name, setName] = useState<string | null>(null);
     const [description, setDescription] = useState<string | null>(null);
@@ -28,6 +30,7 @@ export const RequestModal = (props: ModalProps) => {
     const [selectedStatus, setSelectedStatus] = useState<number | null>(null);
     const [selectedPriority, setSelectedPriority] = useState<number | null>(null);
     const [selectedType, setSelectedType] = useState<number | null>(null);
+    const [selectedSubType, setSelectedSubType] = useState<number | null>(null);
     const [selectedClient, setSelectedClient] = useState<number | null>(null);
     const [selectedAssistant, setSelectedAssistant] = useState<number | null>(null);
     const [selectedExecutor, setSelectedExecutor] = useState<number | null>(null);
@@ -49,7 +52,10 @@ export const RequestModal = (props: ModalProps) => {
             setSolution(props.selectedRequest.solution);
             setSelectedStatus(props.selectedRequest.status.id);
             setSelectedPriority(props.selectedRequest.priority.id);
-            setSelectedType(props.selectedRequest.type.id);
+            if (props.selectedRequest.subType !== null) {
+                setSelectedType(props.selectedRequest.subType.typeId);
+                setSelectedSubType(props.selectedRequest.subType.id);
+            }
             setSelectedClient(props.selectedRequest.client.id);
             setSelectedAssistant(props.selectedRequest.assistant.id);
             setSelectedExecutor(props.selectedRequest.executor.id);
@@ -66,12 +72,12 @@ export const RequestModal = (props: ModalProps) => {
     }, [createdRequest, updatedRequest]);
     const confirmHandler = () => {
         let status:StatusModel|undefined = statuses.find((status:StatusModel) => status.id === selectedStatus);
-        let type:TypeModel|undefined = types.find((type:TypeModel) => type.id === selectedType);
+        let subType:SubTypeModel|undefined = subTypes.find((subType:SubTypeModel) => subType.id === selectedSubType);
         let priority:PriorityModel|undefined = priorities.find((priority: PriorityModel) => priority.id === selectedPriority);
         let client:UserModel|undefined = users.find((user:UserModel) => user.id === selectedClient);
         let executor:UserModel|undefined = users.find((user:UserModel) => user.id === selectedExecutor);
         let assistant:UserModel|undefined = users.find((user:UserModel) => user.id === selectedAssistant);
-        if (assistant && client && executor && priority && status && type && createDate && deadlineDate && name){
+        if (assistant && client && executor && priority && status && subType && createDate && deadlineDate && name){
             let requestModel: RequestModel = {
                 id: 0,
                 assistant,
@@ -85,7 +91,7 @@ export const RequestModal = (props: ModalProps) => {
                 priority,
                 solution: solution ?? "",
                 status,
-                type
+                subType
             };
             if (props.selectedRequest) updateRequest({...requestModel, id: props.selectedRequest.id});
             else createRequest(requestModel);
@@ -99,6 +105,7 @@ export const RequestModal = (props: ModalProps) => {
                onCancel={() => props.setVisible(false)}
                okText={props.selectedRequest ? "Сохранить" : "Создать"}
                width={'550px'}
+               maskClosable={false}
         >
             <Flex gap={'small'} vertical={true}>
                 <Flex align={"center"}>
@@ -141,6 +148,16 @@ export const RequestModal = (props: ModalProps) => {
                         style={{width: '100%'}}
                         onChange={(id) => setSelectedType(id)}
                         options={types.map((type: TypeModel) => ({value: type.id, label: type.name}))}
+                    />
+                </Flex>
+                <Flex align={"center"}>
+                    <div style={{width: 180}}>Подтип заявки</div>
+                    <Select
+                        value={selectedSubType}
+                        placeholder={"Выберите подтип заявки"}
+                        style={{width: '100%'}}
+                        onChange={(id) => setSelectedSubType(id)}
+                        options={subTypes.filter((st:SubTypeModel) => st.typeId === selectedType).map((subType: SubTypeModel) => ({value: subType.id, label: subType.name}))}
                     />
                 </Flex>
                 <Flex align={"center"}>

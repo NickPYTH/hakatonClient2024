@@ -12,16 +12,25 @@ export const generateModelColumn = (collection: any[] | undefined, title: string
         dataIndex,
         key: dataIndex,
         filters: collection?.reduce((acc: { text: string, value: string }[], model: any) => {
-            if (acc.find((g: { text: string, value: string }) => g.text === model[dataIndex][filterSearchField]) === undefined)
-                return acc.concat({text: model[dataIndex][filterSearchField], value: model[dataIndex][filterSearchField]});
+            if (model[dataIndex] !== null) {
+                if (acc.find((g: { text: string, value: string }) => g.text === model[dataIndex][filterSearchField]) === undefined)
+                    return acc.concat({
+                        text: model[dataIndex][filterSearchField],
+                        value: model[dataIndex][filterSearchField]
+                    });
+            }
             return acc;
         }, []),
         onFilter: (value: any, record: any) => {
             return record[dataIndex][filterSearchField].indexOf(value) === 0
         },
         filterSearch: true,
-        sorter: (a:any, b:any) => a[dataIndex][filterSearchField].length - b[dataIndex][filterSearchField].length,
-        render: (val:any, record:any) => (<div>{val[filterSearchField]}</div>)
+        sorter: (a:any, b:any) => {
+            if (a[dataIndex] !== null && b[dataIndex] !== null)
+                return a[dataIndex][filterSearchField].length - b[dataIndex][filterSearchField].length
+            else return 0;
+        },
+        render: (val:any, record:any) => (<div>{val != null && val[filterSearchField]}</div>)
     }
 }
 

@@ -53,7 +53,7 @@ const RequestScreen: React.FC = () => {
         {...generateStringColumn(requests, "Решение", "solution")},
         {...generateModelColumn(requests, "Статус", "status", "name")},
         {...generateModelColumn(requests, "Приоритет", "priority", "name")},
-        {...generateModelColumn(requests, "Тип", "type", "name")},
+        {...generateModelColumn(requests, "Тип", "subType", "name")},
         {...generateModelColumn(requests, "Заявитель", "client", "name")},
         {...generateModelColumn(requests, "Хелпер", "assistant", "name")},
         {...generateModelColumn(requests, "Исполнитель", "executor", "name")},

@@ -1,49 +1,49 @@
 import {createApi, fetchBaseQuery} from "@reduxjs/toolkit/dist/query/react";
 import {host, port, secure} from "../config/constants";
-import {RequestModel} from "../model/RequestModel";
+import {SubTypeModel} from "../model/SubTypeModel";
 
-export const requestAPI = createApi({
-    reducerPath: 'requestAPI',
+export const subTypeAPI = createApi({
+    reducerPath: 'subTypeAPI',
     baseQuery: fetchBaseQuery(
         {
-            baseUrl: `${secure}://${host}${port}/requests`,
+            baseUrl: `${secure}://${host}${port}/subtypes`,
             prepareHeaders: (headers, {getState}) => {
                 headers.set('authorization', `Bearer ${localStorage.getItem('token')}`)
                 return headers
             },
         }
     ),
-    tagTypes: ['Request'],
+    tagTypes: ['SubType'],
     endpoints: (build) => ({
-        getAll: build.mutation<RequestModel[], void>({
+        getAll: build.mutation<SubTypeModel[], void>({
             query: () => ({
                 url: `/all`,
                 method: 'GET',
             }),
-            invalidatesTags: ['Request']
+            invalidatesTags: ['SubType']
         }),
-        create: build.mutation<RequestModel, RequestModel>({
+        create: build.mutation<SubTypeModel, SubTypeModel>({
             query: (body) => ({
                 url: `/create`,
                 method: 'POST',
                 body
             }),
-            invalidatesTags: ['Request']
+            invalidatesTags: ['SubType']
         }),
-        update: build.mutation<RequestModel, RequestModel>({
+        update: build.mutation<SubTypeModel, SubTypeModel>({
             query: (body) => ({
                 url: `/update`,
-                method: 'PUT',
+                method: 'POST',
                 body
             }),
-            invalidatesTags: ['Request']
+            invalidatesTags: ['SubType']
         }),
-        delete: build.mutation<RequestModel, number>({
+        delete: build.mutation<SubTypeModel, number>({
             query: (id) => ({
                 url: `/delete?id=${id}`,
                 method: 'DELETE',
             }),
-            invalidatesTags: ['Request']
+            invalidatesTags: ['SubType']
         }),
     })
 });

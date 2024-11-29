@@ -8,6 +8,7 @@ import {ClientScreen} from "../screen/ClientScreen";
 import TypeScreen from "../screen/admin/TypeScreen";
 import StatusScreen from "../screen/admin/StatusScreen";
 import PriorityScreen from "../screen/admin/PriorityScreen";
+import SubTypeScreen from '../screen/admin/SubTypeScreen';
 
 export const Router = () => {
     return (
@@ -37,6 +38,10 @@ export const Router = () => {
                 <Route
                     path='/admin/types'
                     element={<TypeScreen/>}
+                />
+                <Route
+                    path='/admin/subtypes'
+                    element={<SubTypeScreen/>}
                 />
                 <Route
                     path='/admin/statuses'
