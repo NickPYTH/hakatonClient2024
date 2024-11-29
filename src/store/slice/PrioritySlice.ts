@@ -1,9 +1,8 @@
 import {createSlice} from "@reduxjs/toolkit";
-import {StatusModel} from "../../model/StatusModel";
 import {PriorityModel} from "../../model/PriorityModel";
 
 export type PriorityModelStateType = {
-    priorities: StatusModel[]
+    priorities: PriorityModel[]
 }
 
 const initialState: PriorityModelStateType = {

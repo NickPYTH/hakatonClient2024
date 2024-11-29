@@ -6,11 +6,11 @@ import {RequestModel} from "../model/RequestModel";
 import dayjs, {Dayjs} from "dayjs";
 import {requestAPI} from "../service/RequestService";
 import {StatusModel} from "../model/StatusModel";
-import {TypeModel} from "../model/TypeModel";
 import {PriorityModel} from "../model/PriorityModel";
 import {UserModel} from "../model/UserModel";
 import {dateTimeFormat} from "../config/constants";
 import {SubTypeModel} from "../model/SubTypeModel";
+import {TypeModel} from "../model/TypeModel";
 
 type ModalProps = {
     selectedRequest: RequestModel | null,

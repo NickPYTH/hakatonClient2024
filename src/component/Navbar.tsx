@@ -140,7 +140,6 @@ export const Navbar = () => {
         if (subTypesFromRequest) dispatch(setSubTypes(subTypesFromRequest));
     }, [subTypesFromRequest]);
     const [current, setCurrent] = useState<ROUTES>(() => {
-        console.log(document.location.pathname.slice(1))
         switch (document.location.pathname.slice(1)) {
             case ROUTES.USERS:
                 return ROUTES.USERS

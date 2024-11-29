@@ -12,6 +12,38 @@ import {TypeModel} from "../../model/TypeModel";
 
 const SubTypeScreen: React.FC = () => {
     const types = useSelector((state: RootStateType) => state.types.types);
+    function getUniqTypesList(data: SubTypeModel[] | undefined):{text:string,value:number}[] {
+        if (data){
+            let result: {text:string,value:number}[] = [];
+            data.forEach((record: SubTypeModel) => {
+                if (!result.find((resRecord:{text:string,value:number}) => resRecord.value === record.typeId)){
+                    result.push({
+                        text: types.find((t:TypeModel) => t.id === record.typeId)?.name ?? "",
+                        value: record.typeId
+                    });
+                }
+            });
+            return result;
+        } else return [];
+    }
+    function getGroupedData(data: SubTypeModel[]) {
+        return getUniqTypesList(data).map((type, key) => {
+            let parentKey = key + 1;
+            let result:any = {
+                key: parentKey,
+                type: type.text,
+                children: []
+            };
+            let counter = 0;
+            data.forEach((record) => {
+               if (record.typeId === type.value){
+                   counter++;
+                   result.children.push({...record, key: parseInt(`${parentKey}${counter}`)})
+               }
+            });
+            return result;
+        });
+    }
     const [redirectToLogin, setRedirectToLogin] = useState<boolean>(false);
     const [subTypeModalVisible, setSubTypeModalVisible] = useState(false);
     const [selectedSubType, setSelectedSubType] = useState<SubTypeModel | null>(null);
@@ -46,22 +78,24 @@ const SubTypeScreen: React.FC = () => {
         if (!subTypeModalVisible) setSelectedSubType(null);
     }, [subTypeModalVisible]);
     const columns: TableProps<SubTypeModel>['columns'] = [
-        {...generateNumberColumn(subTypes, "ИД", "id", SORT_ORDER.DESCEND)},
         {
             dataIndex: 'type',
             title: "Название типа",
-            render: (_,record:SubTypeModel) => (<div>{types.find((type:TypeModel) => type.id === record.typeId)?.name}</div>),
+            render: (_,record:any) => (<div>{record.type}</div>),
         },
         {...generateStringColumn(subTypes, "Название подтипа", "name")},
         {
             dataIndex: 'delete',
-            render: (_,record:SubTypeModel) => <Flex justify={'center'}>
-                <Popconfirm title={"Вы уверены?"} onConfirm={() => {
-                    deleteSubType(record.id);
-                }}>
-                    <Button danger>Удалить</Button>
-                </Popconfirm>
-            </Flex>,
+            render: (_,record:any) => {
+                if (!record.hasOwnProperty('children'))
+                    return (<Flex justify={'center'}>
+                        <Popconfirm title={"Вы уверены?"} onConfirm={() => {
+                            deleteSubType(record.id);
+                        }}>
+                            <Button danger>Удалить</Button>
+                        </Popconfirm>
+                    </Flex>)
+            },
         },
     ]
     if (isSubTypesLoading || isSubTypeDeleteLoading)
@@ -78,7 +112,7 @@ const SubTypeScreen: React.FC = () => {
                 <Table
                     style={{width: '100vw'}}
                     columns={columns}
-                    dataSource={subTypes}
+                    dataSource={subTypes ? getGroupedData(subTypes) : []}
                     onRow={(record, rowIndex) => {
                         return {
                             onDoubleClick: (e) => {

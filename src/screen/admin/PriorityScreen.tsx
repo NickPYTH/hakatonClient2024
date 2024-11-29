@@ -3,18 +3,14 @@ import {Button, Flex, Popconfirm, Spin, Table, TableProps} from 'antd';
 import {Navigate} from 'react-router-dom';
 import {authAPI} from "../../service/AuthService";
 import {generateNumberColumn, generateStringColumn, SORT_ORDER} from "../../config/columnFieldGenerator";
-import {TypeModel} from "../../model/TypeModel";
-import {typeAPI} from "../../service/TypeService";
-import { TypeModal } from '../../component/TypeModal';
-import {statusAPI} from "../../service/StatusService";
-import {StatusModal} from "../../component/StatusModal";
 import {priorityAPI} from "../../service/PriorityService";
 import {PriorityModal} from "../../component/PriorityModal";
+import {PriorityModel} from "../../model/PriorityModel";
 
 const PriorityScreen: React.FC = () => {
     const [redirectToLogin, setRedirectToLogin] = useState<boolean>(false);
     const [priorityModalVisible, setPriorityModalVisible] = useState(false);
-    const [selectedPriority, setSelectedPriority] = useState<TypeModel | null>(null);
+    const [selectedPriority, setSelectedPriority] = useState<PriorityModel | null>(null);
     const [getAll, {
         data: priorities,
         isLoading: isPrioritiesLoading
@@ -45,12 +41,13 @@ const PriorityScreen: React.FC = () => {
     useEffect(() => {
         if (!priorityModalVisible) setSelectedPriority(null);
     }, [priorityModalVisible]);
-    const columns: TableProps<TypeModel>['columns'] = [
+    const columns: TableProps<PriorityModel>['columns'] = [
         {...generateNumberColumn(priorities, "ИД", "id", SORT_ORDER.DESCEND)},
         {...generateStringColumn(priorities, "Название", "name")},
+        {...generateNumberColumn(priorities, "Длительность", "term", SORT_ORDER.DISABLE)},
         {
             dataIndex: 'delete',
-            render: (_,record:TypeModel) => <Flex justify={'center'}>
+            render: (_,record:PriorityModel) => <Flex justify={'center'}>
                 <Popconfirm title={"Вы уверены?"} onConfirm={() => {
                     deletePriority(record.id);
                 }}>

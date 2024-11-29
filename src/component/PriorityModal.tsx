@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {Flex, Input, Modal} from 'antd';
+import {Flex, Input, InputNumber, Modal} from 'antd';
 import {PriorityModel} from "../model/PriorityModel";
 import {priorityAPI} from "../service/PriorityService";
 
@@ -11,6 +11,7 @@ type ModalProps = {
 }
 export const PriorityModal = (props: ModalProps) => {
     const [name, setName] = useState<string | null>(null);
+    const [term, setTerm] = useState<number | null>(null);
     const [createPriority, {
         data: createdPriority,
         isLoading: isCreatePriorityLoading
@@ -22,6 +23,7 @@ export const PriorityModal = (props: ModalProps) => {
     useEffect(() => {
         if (props.selectedPriority) {
             setName(props.selectedPriority.name);
+            setTerm(props.selectedPriority.term);
         }
     }, [props.selectedPriority]);
     useEffect(() => {
@@ -31,10 +33,11 @@ export const PriorityModal = (props: ModalProps) => {
         }
     }, [createdPriority, updatedPriority]);
     const confirmHandler = () => {
-        if (name){
+        if (name && term){
             let priorityModel: PriorityModel = {
                 id: 0,
                 name,
+                term
             };
             if (props.selectedPriority) updatePriority({...priorityModel, id: props.selectedPriority.id});
             else createPriority(priorityModel);
@@ -53,6 +56,10 @@ export const PriorityModal = (props: ModalProps) => {
                 <Flex align={"center"}>
                     <div style={{width: 180}}>Название</div>
                     <Input placeholder={"Введите название"} value={name ?? ""} onChange={(e) => setName(e.target.value)}/>
+                </Flex>
+                <Flex align={"center"}>
+                    <div style={{width: 180}}>Длительность</div>
+                    <InputNumber placeholder={"Введите длительность"} value={term} onChange={(e) => setTerm(e)}/>
                 </Flex>
             </Flex>
         </Modal>
