@@ -1,10 +1,12 @@
 import React, {useEffect, useState} from 'react';
-import {Flex, Input, Modal, Select} from 'antd';
+import {Checkbox, Flex, Input, Modal, Select} from 'antd';
 import {UserModel} from "../model/UserModel";
 import {userAPI} from "../service/UserService";
 import {useSelector} from "react-redux";
 import {RootStateType} from "../store/store";
 import {RoleModel} from "../model/RoleModel";
+import {groupAPI} from "../service/GroupService";
+import {GroupModel} from "../model/GroupModel";
 
 type ModalProps = {
     selectedUser: UserModel | null,
@@ -22,6 +24,8 @@ export const UserModal = (props: ModalProps) => {
     const [email, setEmail] = useState<string | null>(null);
     const [phone, setPhone] = useState<string | null>(null);
     const [selectedRole, setSelectedRole] = useState<number | null>(null);
+    const [selectedGroup, setSelectedGroup] = useState<number | null>(null);
+    const [isBoss, setIsBoss] = useState<boolean>(false);
     const [createUser, {
         data: createdUser,
         isLoading: isCreateUserLoading
@@ -30,6 +34,13 @@ export const UserModal = (props: ModalProps) => {
         data: updatedUser,
         isLoading: isUpdateUserLoading
     }] = userAPI.useUpdateUserMutation();
+    const [getGroups, {
+        data: groups,
+        isLoading: isGetGroupsLoading
+    }] = groupAPI.useGetAllMutation();
+    useEffect(() => {
+        getGroups();
+    }, []);
     useEffect(() => {
         if (props.selectedUser) {
             setUsername(props.selectedUser.username);
@@ -40,6 +51,9 @@ export const UserModal = (props: ModalProps) => {
             setEmail(props.selectedUser.email);
             setPhone(props.selectedUser.phone);
             setSelectedRole(props.selectedUser.role.id);
+            setIsBoss(props.selectedUser.isBoss);
+            if (props.selectedUser.group)
+                setSelectedGroup(props.selectedUser.group.id)
         }
     }, [props.selectedUser]);
     useEffect(() => {
@@ -50,7 +64,7 @@ export const UserModal = (props: ModalProps) => {
     }, [createdUser, updatedUser]);
     const confirmHandler = () => {
         if (props.selectedUser === null && password === null) return;
-        if (name && username && surname && secondName && email && selectedRole && phone){
+        if (name && username && surname && secondName && email && selectedRole && phone && selectedGroup){
             let user: UserModel = {
                 id: 0,
                 name,
@@ -63,12 +77,18 @@ export const UserModal = (props: ModalProps) => {
                 role: {
                     id: selectedRole,
                     name: ''
-                }
+                },
+                group: {
+                    id: selectedGroup,
+                    name: ''
+                },
+                isBoss
             };
             if (props.selectedUser) updateUser({...user, id: props.selectedUser.id});
             else createUser(user);
         }
     }
+    console.log(isBoss)
     return (
         <Modal title={props.selectedUser ? "Редактирование пользователя" : "Создание пользователя"}
                open={props.visible}
@@ -116,6 +136,21 @@ export const UserModal = (props: ModalProps) => {
                         onChange={(id) => setSelectedRole(id)}
                         options={roles.map((role: RoleModel) => ({value: role.id, label: role.name}))}
                     />
+                </Flex>
+                <Flex align={"center"}>
+                    <div style={{width: 180}}>Группа</div>
+                    <Select
+                        loading={isGetGroupsLoading}
+                        value={selectedGroup}
+                        placeholder={"Выберите группу"}
+                        style={{width: '100%'}}
+                        onChange={(id) => setSelectedGroup(id)}
+                        options={groups?.map((group: GroupModel) => ({value: group.id, label: group.name}))}
+                    />
+                </Flex>
+                <Flex align={"center"}>
+                    <div style={{width: 180}}>Руководитель группы</div>
+                    <Checkbox checked={isBoss} onChange={(e) => setIsBoss(e.target.checked)} />
                 </Flex>
             </Flex>
         </Modal>

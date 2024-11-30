@@ -30,7 +30,6 @@ export const LoginScreen: React.FC = () => {
             if (credentials.token) {
                 localStorage.setItem('token', credentials.token);
                 localStorage.setItem('role', credentials.role);
-                console.log(credentials)
                 if (credentials.role === "0") setRedirectToAdmin(true);
                 if (credentials.role === "1") setRedirectToClient(true);
                 if (credentials.role === "2") setRedirectToExecutor(true);

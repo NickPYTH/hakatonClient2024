@@ -59,7 +59,7 @@ export const PriorityModal = (props: ModalProps) => {
                 </Flex>
                 <Flex align={"center"}>
                     <div style={{width: 180}}>Длительность</div>
-                    <InputNumber placeholder={"Введите длительность"} value={term} onChange={(e) => setTerm(e)}/>
+                    <InputNumber style={{width: '100%'}} placeholder={"Введите длительность"} value={term} onChange={(e) => setTerm(e)}/>
                 </Flex>
             </Flex>
         </Modal>

@@ -1,4 +1,5 @@
 import {RoleModel} from "./RoleModel";
+import {GroupModel} from "./GroupModel";
 
 export type UserModel = {
     id: number;
@@ -10,4 +11,6 @@ export type UserModel = {
     email: string;
     phone: string;
     role: RoleModel;
+    group: GroupModel;
+    isBoss: boolean;
 }

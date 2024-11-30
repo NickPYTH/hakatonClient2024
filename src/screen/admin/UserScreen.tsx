@@ -6,6 +6,7 @@ import {Navigate} from 'react-router-dom';
 import {authAPI} from "../../service/AuthService";
 import {RoleModel} from "../../model/RoleModel";
 import {UserModal} from "../../component/UserModal";
+import {generateModelColumn} from "../../config/columnFieldGenerator";
 
 const UserScreen: React.FC = () => {
     const [redirectToLogin, setRedirectToLogin] = useState<boolean>(false);
@@ -154,6 +155,15 @@ const UserScreen: React.FC = () => {
             },
             filterSearch: true,
             sorter: (a, b) => a.role.name.length - b.role.name.length,
+        },
+        {...generateModelColumn(users, "Рабочая группа", "group", "name")},
+        {
+            title: 'Руководитель группы',
+            dataIndex: 'isBoss',
+            key: 'isBoss',
+            render: (_,record:UserModel) => {
+                return <div>{record?.isBoss ? "Да" : "Нет"}</div>
+            },
         },
         {
             dataIndex: 'delete',

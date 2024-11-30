@@ -13,6 +13,7 @@ import prioritySlice, {PriorityModelStateType} from "./slice/PrioritySlice";
 import typeSlice, {TypeModelStateType} from "./slice/TypeSlice";
 import {subTypeAPI} from "../service/SubTypeService";
 import subTypeSlice, {SubTypeModelStateType} from "./slice/SubTypeSlice";
+import {groupAPI} from "../service/GroupService";
 
 export type RootStateType = {
     currentUser: CurrentUserModelStateType,
@@ -38,6 +39,7 @@ const rootReducer = combineReducers({
     [priorityAPI.reducerPath]: priorityAPI.reducer,
     [typeAPI.reducerPath]: typeAPI.reducer,
     [subTypeAPI.reducerPath]: subTypeAPI.reducer,
+    [groupAPI.reducerPath]: groupAPI.reducer,
 })
 
 export const setupStore = () => {
@@ -53,6 +55,7 @@ export const setupStore = () => {
                 .concat(priorityAPI.middleware)
                 .concat(typeAPI.middleware)
                 .concat(subTypeAPI.middleware)
+                .concat(groupAPI.middleware)
     })
 }
 

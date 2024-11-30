@@ -9,6 +9,7 @@ import TypeScreen from "../screen/admin/TypeScreen";
 import StatusScreen from "../screen/admin/StatusScreen";
 import PriorityScreen from "../screen/admin/PriorityScreen";
 import SubTypeScreen from '../screen/admin/SubTypeScreen';
+import GroupScreen from "../screen/admin/GroupScreen";
 
 export const Router = () => {
     return (
@@ -30,6 +31,10 @@ export const Router = () => {
                 <Route
                     path='/admin/users'
                     element={<UserScreen/>}
+                />
+                <Route
+                    path='/admin/groups'
+                    element={<GroupScreen/>}
                 />
                 <Route
                     path='/admin/requests'

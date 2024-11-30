@@ -37,11 +37,11 @@ export const SubTypeModal = (props: ModalProps) => {
         }
     }, [createdSubType, updatedSubType]);
     const confirmHandler = () => {
-        if (name){
+        if (name && selectedType){
             let subTypeModel: SubTypeModel = {
                 id: 0,
                 name,
-                typeId: 999
+                typeId: selectedType
             };
             if (props.selectedSubType) updateSubType({...subTypeModel, id: props.selectedSubType.id});
             else createSubType(subTypeModel);

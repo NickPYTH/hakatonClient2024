@@ -1,49 +1,56 @@
 import {createApi, fetchBaseQuery} from "@reduxjs/toolkit/dist/query/react";
 import {host, port, secure} from "../config/constants";
-import {SubTypeModel} from "../model/SubTypeModel";
+import {GroupModel} from "../model/GroupModel";
 
-export const subTypeAPI = createApi({
-    reducerPath: 'subTypeAPI',
+export const groupAPI = createApi({
+    reducerPath: 'groupAPI',
     baseQuery: fetchBaseQuery(
         {
-            baseUrl: `${secure}://${host}${port}/subtypes`,
+            baseUrl: `${secure}://${host}${port}/groups`,
             prepareHeaders: (headers, {getState}) => {
                 headers.set('authorization', `Bearer ${localStorage.getItem('token')}`)
                 return headers
             },
         }
     ),
-    tagTypes: ['SubType'],
+    tagTypes: ['Group'],
     endpoints: (build) => ({
-        getAll: build.mutation<SubTypeModel[], void>({
+        getAll: build.mutation<GroupModel[], void>({
             query: () => ({
                 url: `/all`,
                 method: 'GET',
             }),
-            invalidatesTags: ['SubType']
+            invalidatesTags: ['Group']
         }),
-        create: build.mutation<SubTypeModel, SubTypeModel>({
+        get: build.mutation<GroupModel, number>({
+            query: (id) => ({
+                url: `/${id}`,
+                method: 'GET',
+            }),
+            invalidatesTags: ['Group']
+        }),
+        create: build.mutation<GroupModel, GroupModel>({
             query: (body) => ({
                 url: `/create`,
                 method: 'POST',
                 body
             }),
-            invalidatesTags: ['SubType']
+            invalidatesTags: ['Group']
         }),
-        update: build.mutation<SubTypeModel, SubTypeModel>({
+        update: build.mutation<GroupModel, GroupModel>({
             query: (body) => ({
                 url: `/update`,
-                method: 'POST',
+                method: 'PUT',
                 body
             }),
-            invalidatesTags: ['SubType']
+            invalidatesTags: ['Group']
         }),
-        delete: build.mutation<SubTypeModel, number>({
+        delete: build.mutation<GroupModel, number>({
             query: (id) => ({
                 url: `/delete/${id}`,
                 method: 'DELETE',
             }),
-            invalidatesTags: ['SubType']
+            invalidatesTags: ['Group']
         }),
     })
 });

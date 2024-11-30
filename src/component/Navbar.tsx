@@ -20,6 +20,7 @@ import {setSubTypes} from "../store/slice/SubTypeSlice";
 enum ROUTES {
     REQUESTS = 'admin/requests',
     USERS = 'admin/users',
+    GROUPS = 'admin/groups',
     STATUSES = 'admin/statuses',
     TYPES = 'admin/types',
     SUB_TYPES = 'admin/subtypes',
@@ -36,6 +37,12 @@ export const Navbar = () => {
                 <Link to={ROUTES.USERS}>Пользователи</Link>
             ),
             key: ROUTES.USERS,
+        },
+        {
+            label: (
+                <Link to={ROUTES.GROUPS}>Рабочие группы</Link>
+            ),
+            key: ROUTES.GROUPS,
         },
         {
             label: (
@@ -143,6 +150,8 @@ export const Navbar = () => {
         switch (document.location.pathname.slice(1)) {
             case ROUTES.USERS:
                 return ROUTES.USERS
+            case ROUTES.GROUPS:
+                return ROUTES.GROUPS
             case ROUTES.REQUESTS:
                 return ROUTES.REQUESTS
             case ROUTES.STATUSES:
