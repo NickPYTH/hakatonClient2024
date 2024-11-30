@@ -12,11 +12,11 @@ type ModalProps = {
 export const RequestCard = (props: ModalProps) => {
     return (
         <Card style={{width: isMobile ? window.innerWidth-50 : 350,
-            margin: 10, boxShadow: "0px 0px 5px 3px rgba(34, 60, 80, 0.2)"}} title={props.request.name} size="small">
+            margin: 10, boxShadow: "0px 0px 5px 3px rgba(34, 60, 80, 0.2)"}} title={`${props.request.id} ${props.request.name}`} size="small">
             <Flex vertical>
-                <div><strong>ИД заявки</strong>: {props.request.id}</div>
-                <div><strong>Описание</strong>: {props.request.description}</div>
+                <div>{props.request.description}</div>
                 <div><strong>Дата создания:</strong> {props.request.createDate}</div>
+                <div><strong>Крайний срок:</strong> {props.request.deadlineDate}</div>
                 {props.request.group && <div><strong>Группа</strong>: {`${props.request.group.name}`}.</div>}
                 {props.request.executor && <div><strong>Исполнитель</strong>: {`${props.request.executor.surname} ${props.request.executor.name[0]}. ${props.request.executor.secondName[0]}`}.</div>}
                 <Button type={'primary'} style={{width: 130, marginTop: 15}}

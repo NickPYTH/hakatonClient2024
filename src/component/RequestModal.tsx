@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {DatePicker, Flex, Input, Modal, Select} from 'antd';
+import {DatePicker, Flex, Input, Modal, Select, Steps, Upload, UploadProps} from 'antd';
 import {useSelector} from "react-redux";
 import {RootStateType} from "../store/store";
 import {RequestModel} from "../model/RequestModel";
@@ -13,6 +13,8 @@ import {SubTypeModel} from "../model/SubTypeModel";
 import {TypeModel} from "../model/TypeModel";
 import {groupAPI} from "../service/GroupService";
 import {GroupModel} from "../model/GroupModel";
+import {equipmentAPI} from "../service/EquipmentService";
+import {EquipmentModel} from "../model/EquipmentModel";
 
 type ModalProps = {
     selectedRequest: RequestModel | null,
@@ -27,9 +29,11 @@ export const RequestModal = (props: ModalProps) => {
     const types = useSelector((state: RootStateType) => state.types.types);
     const subTypes = useSelector((state: RootStateType) => state.subTypes.subTypes);
     const users = useSelector((state: RootStateType) => state.currentUser.users);
+    const currentUser = useSelector((state: RootStateType) => state.currentUser.user);
     const [name, setName] = useState<string | null>(null);
     const [description, setDescription] = useState<string | null>(null);
     const [solution, setSolution] = useState<string | null>(null);
+    const [selectedEquipment, setSelectedEquipment] = useState<number | null>(null);
     const [selectedStatus, setSelectedStatus] = useState<number | null>(1);
     const [selectedPriority, setSelectedPriority] = useState<number | null>(null);
     const [selectedType, setSelectedType] = useState<number | null>(null);
@@ -53,9 +57,19 @@ export const RequestModal = (props: ModalProps) => {
         data: groups,
         isLoading: isGetGroupsLoading
     }] = groupAPI.useGetAllMutation();
+    const [getEquipments, {
+        data: equipments,
+        isLoading: isGetEquipmentsLoading
+    }] = equipmentAPI.useGetAllMutation();
     useEffect(() => {
         getGroups();
+        getEquipments();
     }, []);
+    useEffect(() => {
+        if (currentUser){
+            if (currentUser.role.id === 3) setSelectedAssistant(currentUser.id);
+        }
+    }, [currentUser]);
     useEffect(() => {
         if (props.selectedRequest) {
             setName(props.selectedRequest.name);
@@ -70,8 +84,10 @@ export const RequestModal = (props: ModalProps) => {
             setSelectedClient(props.selectedRequest.client.id);
             setSelectedAssistant(props.selectedRequest.assistant.id);
             setSelectedGroup(props.selectedRequest.group.id);
-                if (props.selectedRequest.executor)
+            if (props.selectedRequest.executor)
                 setSelectedExecutor(props.selectedRequest.executor.id);
+            if (props.selectedRequest.equipment)
+                setSelectedEquipment(props.selectedRequest.equipment.id);
             setCreateDate(dayjs(props.selectedRequest.createDate, dateTimeFormat));
             setDeadlineDate(dayjs(props.selectedRequest.deadlineDate, dateTimeFormat));
             setComment(props.selectedRequest.comment);
@@ -91,6 +107,7 @@ export const RequestModal = (props: ModalProps) => {
         let executor:UserModel|undefined = users.find((user:UserModel) => user.id === selectedExecutor);
         let group:GroupModel|undefined = groups?.find((group:GroupModel) => group.id === selectedGroup);
         let assistant:UserModel|undefined = users.find((user:UserModel) => user.id === selectedAssistant);
+        let equipment:EquipmentModel|undefined = equipments?.find((equipment:EquipmentModel) => equipment.id === selectedEquipment);
         if (assistant && client && group && priority && status && subType && name){
             let requestModel: RequestModel = {
                 id: 0,
@@ -106,7 +123,8 @@ export const RequestModal = (props: ModalProps) => {
                 priority,
                 solution: solution ?? "",
                 status,
-                subType
+                subType,
+                equipment: equipment ?? null,
             };
             if (props.selectedRequest) updateRequest({...requestModel, id: props.selectedRequest.id});
             else createRequest(requestModel);
@@ -122,10 +140,30 @@ export const RequestModal = (props: ModalProps) => {
                    props.setSelectedRequest(null);
                }}
                okText={props.selectedRequest ? "Сохранить" : "Создать"}
-               width={'550px'}
+               width={'650px'}
                maskClosable={false}
         >
             <Flex gap={'small'} vertical={true}>
+                {props.selectedRequest &&
+                    <Steps
+                        style={{marginTop: 15, marginBottom: 15}}
+                        current={props.selectedRequest.status.id - 1}
+                        items={[
+                            {
+                                title: 'Создано',
+                                description: '',
+                            },
+                            {
+                                title: 'В работе',
+                                description: '',
+                            },
+                            {
+                                title: 'Выполнено',
+                                description: '',
+                            },
+                        ]}
+                    />
+                }
                 <Flex align={"center"}>
                     <div style={{width: 180}}>Название</div>
                     <Input placeholder={"Введите название"} value={name ?? ""} onChange={(e) => setName(e.target.value)}/>
@@ -134,7 +172,7 @@ export const RequestModal = (props: ModalProps) => {
                     <div style={{width: 180}}>Описание</div>
                     <Input placeholder={"Введите описание"} value={description ?? ""} onChange={(e) => setDescription(e.target.value)}/>
                 </Flex>
-                {props.selectedRequest !== null &&
+                {(props.selectedRequest !== null && currentUser?.role.id !== 2) &&
                     <Flex align={"center"}>
                         <div style={{width: 180}}>Статус</div>
                         <Select
@@ -184,6 +222,16 @@ export const RequestModal = (props: ModalProps) => {
                         style={{width: '100%'}}
                         onChange={(id) => setSelectedClient(id)}
                         options={users.filter((user: UserModel) => user.role.id === 2).map((user: UserModel) => ({value: user.id, label: `${user.surname} ${user.name[0]}. ${user.secondName[0]}.`}))}
+                    />
+                </Flex>
+                <Flex align={"center"}>
+                    <div style={{width: 180}}>Проблемное оборудование</div>
+                    <Select
+                        value={selectedEquipment}
+                        placeholder={"Выберите оборудование (опционально)"}
+                        style={{width: '100%'}}
+                        onChange={(id) => setSelectedEquipment(id)}
+                        options={equipments?.filter((equipment:EquipmentModel) => equipment.user.id === selectedClient).map((equipment: EquipmentModel) => ({value: equipment.id, label: `${equipment.code} ${equipment.name}`}))}
                     />
                 </Flex>
                 <Flex align={"center"}>

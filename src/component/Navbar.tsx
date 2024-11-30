@@ -16,6 +16,8 @@ import {setCurrentUser, setUsers} from "../store/slice/UserSlice";
 import {RootStateType} from "../store/store";
 import {subTypeAPI} from "../service/SubTypeService";
 import {setSubTypes} from "../store/slice/SubTypeSlice";
+import {host, port, secure} from "../config/constants";
+import {ExecutorWorkModal} from "./ExecutorWorkModal";
 
 enum ROUTES {
     REQUESTS = 'admin/requests',
@@ -25,12 +27,15 @@ enum ROUTES {
     TYPES = 'admin/types',
     SUB_TYPES = 'admin/subtypes',
     PRIORITIES = 'admin/priorities',
+    EQUIPMENTS = 'admin/equipments',
+    REPORTS = 'admin/reports',
     LOGOUT = 'logout',
 }
 export const Navbar = () => {
     const location = useLocation();
     const currentUser = useSelector((state: RootStateType) => state.currentUser.user);
     const dispatch = useDispatch();
+    const [executorWorkModalVisible, setExecutorWorkModalVisible] = useState(false);
     const items: MenuProps['items'] = [
         {
             label: (
@@ -46,9 +51,37 @@ export const Navbar = () => {
         },
         {
             label: (
+                <Link to={ROUTES.EQUIPMENTS}>Оборудование</Link>
+            ),
+            key: ROUTES.EQUIPMENTS,
+        },
+        {
+            label: (
                 <Link to={ROUTES.REQUESTS}>Заявки</Link>
             ),
             key: ROUTES.REQUESTS,
+        },
+        {
+            label: "Отчеты",
+            key: ROUTES.REPORTS,
+            children: [
+                {
+                    label: "Отчет по заявкам",
+                    key: "requestReport",
+                    onClick: () => {
+                        const link = document.createElement('a');
+                        link.href = `${secure}://${host}${port}/reports/requests`;
+                        document.body.appendChild(link);
+                        link.click();
+                        document.body.removeChild(link);
+                    }
+                },
+                {
+                    label: "Исполнительская дисциплина",
+                    key: "executorWorkReport",
+                    onClick: () => setExecutorWorkModalVisible(true)
+                },
+            ]
         },
         {
             label: "Справочники",
@@ -162,6 +195,8 @@ export const Navbar = () => {
                 return ROUTES.SUB_TYPES
             case ROUTES.PRIORITIES:
                 return ROUTES.PRIORITIES
+            case ROUTES.EQUIPMENTS:
+                return ROUTES.EQUIPMENTS
             default:
                 return ROUTES.USERS
         }
@@ -184,7 +219,11 @@ export const Navbar = () => {
     );
     if (currentUser) {
         if (currentUser.role.id !== 2 && currentUser.role.id !== 3 && currentUser.role.id !== 4)
-            return <Menu onClick={onClick} selectedKeys={[current]} mode="horizontal" items={items}/>;
+            return <div>
+                {executorWorkModalVisible && <ExecutorWorkModal visible={executorWorkModalVisible} setVisible={setExecutorWorkModalVisible}/>}
+                <div style={{position: 'absolute', right: 50, top: 11}}><strong>{currentUser.surname} {currentUser.name[0]}. {currentUser.secondName[0]}.</strong></div>
+                <Menu onClick={onClick} selectedKeys={[current]} mode="horizontal" items={items}/>
+        </div>;
         else return <></>
     }
     else return <></>

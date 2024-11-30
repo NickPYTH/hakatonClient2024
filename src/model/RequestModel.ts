@@ -3,6 +3,7 @@ import {PriorityModel} from "./PriorityModel";
 import {UserModel} from "./UserModel";
 import {SubTypeModel} from "./SubTypeModel";
 import {GroupModel} from "./GroupModel";
+import {EquipmentModel} from "./EquipmentModel";
 
 export type RequestModel = {
     id: number;
@@ -19,4 +20,5 @@ export type RequestModel = {
     deadlineDate: string;
     comment: string;
     group: GroupModel;
+    equipment: EquipmentModel | null;
 }

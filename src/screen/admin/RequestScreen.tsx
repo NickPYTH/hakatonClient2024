@@ -1,6 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import {Button, Flex, Popconfirm, Spin, Table, TableProps} from 'antd';
 import {Navigate} from 'react-router-dom';
+import {FileTextOutlined} from '@ant-design/icons'
 import {RequestModel} from "../../model/RequestModel";
 import {requestAPI} from "../../service/RequestService";
 import {authAPI} from "../../service/AuthService";
@@ -11,6 +12,7 @@ import {
     SORT_ORDER
 } from "../../config/columnFieldGenerator";
 import {RequestModal} from "../../component/RequestModal";
+import {host, port, secure} from "../../config/constants";
 
 const RequestScreen: React.FC = () => {
     const [redirectToLogin, setRedirectToLogin] = useState<boolean>(false);
@@ -82,7 +84,16 @@ const RequestScreen: React.FC = () => {
             <Flex vertical={true}>
                 {requestModalVisible && <RequestModal setSelectedRequest={setSelectedRequest} selectedRequest={selectedRequest} visible={requestModalVisible} setVisible={setRequestModalVisible} refresh={getAll}/>}
                 {redirectToLogin && <Navigate to="/login" replace={false}/>}
-                <Button type={'primary'} onClick={() => setRequestModalVisible(true)} style={{width: 100, margin: 10}}>Добавить</Button>
+                <Flex style={{width: '100%'}} justify={'space-between'}>
+                    <Button type={'primary'} onClick={() => setRequestModalVisible(true)} style={{width: 100, margin: 10}}>Добавить</Button>
+                    <Button icon={<FileTextOutlined />} type={'primary'} onClick={() => {
+                        const link = document.createElement('a');
+                        link.href = `${secure}://${host}${port}/reports/requests`;
+                        document.body.appendChild(link);
+                        link.click();
+                        document.body.removeChild(link);
+                    }} style={{width: 100, margin: 10}}>Отчет</Button>
+                </Flex>
                 <Table
                     style={{width: '100vw'}}
                     columns={columns}

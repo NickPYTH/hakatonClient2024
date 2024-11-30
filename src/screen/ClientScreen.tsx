@@ -13,6 +13,7 @@ import {isMobile} from 'react-device-detect';
 import {RequestModal} from "../component/RequestModal";
 
 export const ClientScreen = () => {
+    const currentUser = useSelector((state: RootStateType) => state.currentUser.user);
     const statuses = useSelector((state: RootStateType) => state.statuses.statuses);
     const [requests, setRequests] = useState<RequestModel[]>([]);
     const [redirectToLogin, setRedirectToLogin] = useState<boolean>(false);
@@ -82,6 +83,7 @@ export const ClientScreen = () => {
         <div style={{minHeight: window.innerHeight}}>
             {redirectToLogin && <Navigate to="/login" replace={false}/>}
             {visibleRequestModal && <RequestModal setSelectedRequest={setSelectedRequest} selectedRequest={selectedRequest} visible={visibleRequestModal} setVisible={setVisibleRequestModal} refresh={getMyRequests} />}
+            <div style={{position: 'absolute', right: 50, top: 11}}><strong>{currentUser?.surname} {currentUser?.name[0]}. {currentUser?.secondName[0]}.</strong></div>
             <Menu className="centeredItemsTop" style={{marginBottom: 5, display: 'flex', justifyContent: 'center'}}
                   defaultValue={'filter'} onClick={tonTopNavigationClick}
                   selectedKeys={[currentTopMenuItem]} mode="horizontal" items={topNavigationItems}/>

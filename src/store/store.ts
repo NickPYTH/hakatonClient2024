@@ -14,6 +14,7 @@ import typeSlice, {TypeModelStateType} from "./slice/TypeSlice";
 import {subTypeAPI} from "../service/SubTypeService";
 import subTypeSlice, {SubTypeModelStateType} from "./slice/SubTypeSlice";
 import {groupAPI} from "../service/GroupService";
+import {equipmentAPI} from "../service/EquipmentService";
 
 export type RootStateType = {
     currentUser: CurrentUserModelStateType,
@@ -40,6 +41,7 @@ const rootReducer = combineReducers({
     [typeAPI.reducerPath]: typeAPI.reducer,
     [subTypeAPI.reducerPath]: subTypeAPI.reducer,
     [groupAPI.reducerPath]: groupAPI.reducer,
+    [equipmentAPI.reducerPath]: equipmentAPI.reducer,
 })
 
 export const setupStore = () => {
@@ -56,6 +58,7 @@ export const setupStore = () => {
                 .concat(typeAPI.middleware)
                 .concat(subTypeAPI.middleware)
                 .concat(groupAPI.middleware)
+                .concat(equipmentAPI.middleware)
     })
 }
 

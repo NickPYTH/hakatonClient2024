@@ -8,7 +8,7 @@ export const requestAPI = createApi({
         {
             baseUrl: `${secure}://${host}${port}/requests`,
             prepareHeaders: (headers, {getState}) => {
-                headers.set('authorization', `Bearer ${localStorage.getItem('token')}`)
+                headers.set('authorization', `Bearer ${localStorage.getItem('token')}`);
                 return headers
             },
         }
