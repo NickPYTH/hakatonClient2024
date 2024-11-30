@@ -6,7 +6,7 @@ import {Navigate} from 'react-router-dom';
 import {authAPI} from "../../service/AuthService";
 import {RoleModel} from "../../model/RoleModel";
 import {UserModal} from "../../component/UserModal";
-import {generateModelColumn} from "../../config/columnFieldGenerator";
+import {generateModelColumn, generateStringColumn} from "../../config/columnFieldGenerator";
 
 const UserScreen: React.FC = () => {
     const [redirectToLogin, setRedirectToLogin] = useState<boolean>(false);
@@ -165,6 +165,8 @@ const UserScreen: React.FC = () => {
                 return <div>{record?.isBoss ? "Да" : "Нет"}</div>
             },
         },
+        {...generateStringColumn(users, "TG name", "tgName")},
+        {...generateStringColumn(users, "TG id", "tgId")},
         {
             dataIndex: 'delete',
             render: (_,record:UserModel) => <Flex justify={'center'}>

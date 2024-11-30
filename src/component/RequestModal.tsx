@@ -66,6 +66,27 @@ export const RequestModal = (props: ModalProps) => {
     }, [props.selectedRequest]);
     useEffect(() => {
         if (createdRequest || updatedRequest) {
+            let id = 999;
+            if (createdRequest) {
+                id = createdRequest.id;
+            }
+            const formdata = new FormData();
+            formdata.append("role", "client");
+            formdata.append("tg_id", "882012264");
+            formdata.append("request_id", id.toString());
+            formdata.append("request_name", name ?? "");
+            formdata.append("link", "https://nickpyth-hakatonclient2024-e942.twc1.net/my");
+            formdata.append("create_date", createDate ? createDate.format("DD-MM-YYYY HH:mm") : "");
+            const requestOptions = {
+                method: "POST",
+                body: formdata,
+                redirect: "follow"
+            };
+            //@ts-ignore
+            fetch("https://evgeny1337-hackatonbot-c635.twc1.net/sendnotif", requestOptions)
+                .then((response) => response.text())
+                .then((result) => console.log(result))
+                .catch((error) => console.error(error));
             props.setVisible(false);
             props.refresh();
         }

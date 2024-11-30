@@ -183,7 +183,7 @@ export const Navbar = () => {
         </div>
     );
     if (currentUser) {
-        if (currentUser.role.id !== 2) // client
+        if (currentUser.role.id !== 2 && currentUser.role.id !== 3 && currentUser.role.id !== 4)
             return <Menu onClick={onClick} selectedKeys={[current]} mode="horizontal" items={items}/>;
         else return <></>
     }

@@ -13,4 +13,6 @@ export type UserModel = {
     role: RoleModel;
     group: GroupModel;
     isBoss: boolean;
+    tgName: string;
+    tgId: string;
 }

@@ -26,6 +26,8 @@ export const UserModal = (props: ModalProps) => {
     const [selectedRole, setSelectedRole] = useState<number | null>(null);
     const [selectedGroup, setSelectedGroup] = useState<number | null>(null);
     const [isBoss, setIsBoss] = useState<boolean>(false);
+    const [tgName, setTgName] = useState<string | null>(null);
+    const [tgId, setTgId] = useState<string | null>(null);
     const [createUser, {
         data: createdUser,
         isLoading: isCreateUserLoading
@@ -52,6 +54,8 @@ export const UserModal = (props: ModalProps) => {
             setPhone(props.selectedUser.phone);
             setSelectedRole(props.selectedUser.role.id);
             setIsBoss(props.selectedUser.isBoss);
+            setTgName(props.selectedUser.tgName);
+            setTgId(props.selectedUser.tgId);
             if (props.selectedUser.group)
                 setSelectedGroup(props.selectedUser.group.id)
         }
@@ -82,7 +86,9 @@ export const UserModal = (props: ModalProps) => {
                     id: selectedGroup,
                     name: ''
                 },
-                isBoss
+                isBoss,
+                tgName: tgName ?? '',
+                tgId: tgId ?? ''
             };
             if (props.selectedUser) updateUser({...user, id: props.selectedUser.id});
             else createUser(user);
@@ -151,6 +157,14 @@ export const UserModal = (props: ModalProps) => {
                 <Flex align={"center"}>
                     <div style={{width: 180}}>Руководитель группы</div>
                     <Checkbox checked={isBoss} onChange={(e) => setIsBoss(e.target.checked)} />
+                </Flex>
+                <Flex align={"center"}>
+                    <div style={{width: 180}}>TG name</div>
+                    <Input placeholder={"Введите tg name"} value={tgName ?? ""} onChange={(e) => setTgName(e.target.value)}/>
+                </Flex>
+                <Flex align={"center"}>
+                    <div style={{width: 180}}>TG id</div>
+                    <Input placeholder={"Введите tg id"} value={tgId ?? ""} onChange={(e) => setTgId(e.target.value)}/>
                 </Flex>
             </Flex>
         </Modal>

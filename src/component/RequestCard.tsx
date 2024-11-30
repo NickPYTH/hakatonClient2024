@@ -11,7 +11,8 @@ type ModalProps = {
 }
 export const RequestCard = (props: ModalProps) => {
     return (
-        <Card style={{width: isMobile ? window.innerWidth-50 : 350, marginBottom: 10}} title={props.request.name} size="small">
+        <Card style={{width: isMobile ? window.innerWidth-50 : 350,
+            margin: 10, boxShadow: "0px 0px 5px 3px rgba(34, 60, 80, 0.2)"}} title={props.request.name} size="small">
             <Flex vertical>
                 <div><strong>ИД заявки</strong>: {props.request.id}</div>
                 <div><strong>Описание</strong>: {props.request.description}</div>

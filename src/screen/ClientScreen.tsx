@@ -88,7 +88,14 @@ export const ClientScreen = () => {
             <div className="centeredItemsTop" style={{marginBottom: 5}}>
                 <Segmented value={currentMenuItem} onChange={(e:any) => {
                     setCurrentMenuItem(e)
-                }} size={'middle'} block style={{width: '100%'}} options={statuses.map((status:StatusModel) => ({value: status.id, label: status.name}))}/>
+                }} size={'middle'} block style={{width: '100%'}} options={
+                    statuses.map((status:StatusModel) => (
+                        {
+                            value: status.id,
+                            label: `${isRequestsLoading ? "" : requestsFromRequest?.filter((r:RequestModel) => r.status.id === status.id).length} ${status.name}`
+                        }
+                    ))
+                }/>
             </div>
             <Space direction="vertical" size="middle"
                    style={{display: 'flex'}}>
@@ -98,14 +105,14 @@ export const ClientScreen = () => {
                     </div>
                     :
                     <>{!isMobile ?
-                        <Flex wrap={true} justify={'space-around'}>
+                        <Flex wrap={true} justify={'flex-start'} style={{marginTop: 15}}>
                             {requests?.map((request:RequestModel) =>
                                 <RequestCard setVisibleRequestModal={setVisibleRequestModal}
                                              setSelectedRequest={setSelectedRequest}
                                              request={request}/>                            )}
                         </Flex>
                             :
-                        <Flex justify={'center'} vertical align={'center'}>
+                        <Flex justify={'center'} vertical align={'center'} style={{marginTop: 15}}>
                             {requests?.map((request:RequestModel) =>
                                 <RequestCard setVisibleRequestModal={setVisibleRequestModal}
                                              setSelectedRequest={setSelectedRequest}
