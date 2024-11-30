@@ -17,7 +17,8 @@ export const RequestCard = (props: ModalProps) => {
                 <div><strong>ИД заявки</strong>: {props.request.id}</div>
                 <div><strong>Описание</strong>: {props.request.description}</div>
                 <div><strong>Дата создания:</strong> {props.request.createDate}</div>
-                <div><strong>Исполнитель</strong>: {`${props.request.executor.surname} ${props.request.executor.name[0]}. ${props.request.executor.secondName[0]}`}.</div>
+                {props.request.group && <div><strong>Группа</strong>: {`${props.request.group.name}`}.</div>}
+                {props.request.executor && <div><strong>Исполнитель</strong>: {`${props.request.executor.surname} ${props.request.executor.name[0]}. ${props.request.executor.secondName[0]}`}.</div>}
                 <Button type={'primary'} style={{width: 130, marginTop: 15}}
                         onClick={() => {
                             props.setSelectedRequest(props.request);

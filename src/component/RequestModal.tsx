@@ -11,12 +11,15 @@ import {UserModel} from "../model/UserModel";
 import {dateTimeFormat} from "../config/constants";
 import {SubTypeModel} from "../model/SubTypeModel";
 import {TypeModel} from "../model/TypeModel";
+import {groupAPI} from "../service/GroupService";
+import {GroupModel} from "../model/GroupModel";
 
 type ModalProps = {
     selectedRequest: RequestModel | null,
     visible: boolean,
     setVisible: Function,
-    refresh: Function
+    refresh: Function,
+    setSelectedRequest: Function
 }
 export const RequestModal = (props: ModalProps) => {
     const statuses = useSelector((state: RootStateType) => state.statuses.statuses);
@@ -27,12 +30,13 @@ export const RequestModal = (props: ModalProps) => {
     const [name, setName] = useState<string | null>(null);
     const [description, setDescription] = useState<string | null>(null);
     const [solution, setSolution] = useState<string | null>(null);
-    const [selectedStatus, setSelectedStatus] = useState<number | null>(null);
+    const [selectedStatus, setSelectedStatus] = useState<number | null>(1);
     const [selectedPriority, setSelectedPriority] = useState<number | null>(null);
     const [selectedType, setSelectedType] = useState<number | null>(null);
     const [selectedSubType, setSelectedSubType] = useState<number | null>(null);
     const [selectedClient, setSelectedClient] = useState<number | null>(null);
     const [selectedAssistant, setSelectedAssistant] = useState<number | null>(null);
+    const [selectedGroup, setSelectedGroup] = useState<number | null>(null);
     const [selectedExecutor, setSelectedExecutor] = useState<number | null>(null);
     const [createDate, setCreateDate] = useState<Dayjs | null>(null);
     const [deadlineDate, setDeadlineDate] = useState<Dayjs | null>(null);
@@ -45,6 +49,13 @@ export const RequestModal = (props: ModalProps) => {
         data: updatedRequest,
         isLoading: isUpdateRequestLoading
     }] = requestAPI.useUpdateMutation();
+    const [getGroups, {
+        data: groups,
+        isLoading: isGetGroupsLoading
+    }] = groupAPI.useGetAllMutation();
+    useEffect(() => {
+        getGroups();
+    }, []);
     useEffect(() => {
         if (props.selectedRequest) {
             setName(props.selectedRequest.name);
@@ -58,7 +69,9 @@ export const RequestModal = (props: ModalProps) => {
             }
             setSelectedClient(props.selectedRequest.client.id);
             setSelectedAssistant(props.selectedRequest.assistant.id);
-            setSelectedExecutor(props.selectedRequest.executor.id);
+            setSelectedGroup(props.selectedRequest.group.id);
+                if (props.selectedRequest.executor)
+                setSelectedExecutor(props.selectedRequest.executor.id);
             setCreateDate(dayjs(props.selectedRequest.createDate, dateTimeFormat));
             setDeadlineDate(dayjs(props.selectedRequest.deadlineDate, dateTimeFormat));
             setComment(props.selectedRequest.comment);
@@ -76,17 +89,19 @@ export const RequestModal = (props: ModalProps) => {
         let priority:PriorityModel|undefined = priorities.find((priority: PriorityModel) => priority.id === selectedPriority);
         let client:UserModel|undefined = users.find((user:UserModel) => user.id === selectedClient);
         let executor:UserModel|undefined = users.find((user:UserModel) => user.id === selectedExecutor);
+        let group:GroupModel|undefined = groups?.find((group:GroupModel) => group.id === selectedGroup);
         let assistant:UserModel|undefined = users.find((user:UserModel) => user.id === selectedAssistant);
-        if (assistant && client && executor && priority && status && subType && createDate && deadlineDate && name){
+        if (assistant && client && group && priority && status && subType && name){
             let requestModel: RequestModel = {
                 id: 0,
                 assistant,
                 client,
                 comment: comment ?? "",
-                createDate: createDate.format(dateTimeFormat),
-                deadlineDate: deadlineDate.format(dateTimeFormat),
+                createDate: props.selectedRequest ? props.selectedRequest.createDate : "",
+                deadlineDate: props.selectedRequest ? props.selectedRequest.deadlineDate : "",
                 description: description ?? "",
-                executor,
+                group,
+                executor: executor ?? null,
                 name,
                 priority,
                 solution: solution ?? "",
@@ -102,7 +117,10 @@ export const RequestModal = (props: ModalProps) => {
                open={props.visible}
                loading={(isCreateRequestLoading || isUpdateRequestLoading)}
                onOk={confirmHandler}
-               onCancel={() => props.setVisible(false)}
+               onCancel={() => {
+                   props.setVisible(false);
+                   props.setSelectedRequest(null);
+               }}
                okText={props.selectedRequest ? "Сохранить" : "Создать"}
                width={'550px'}
                maskClosable={false}
@@ -116,20 +134,18 @@ export const RequestModal = (props: ModalProps) => {
                     <div style={{width: 180}}>Описание</div>
                     <Input placeholder={"Введите описание"} value={description ?? ""} onChange={(e) => setDescription(e.target.value)}/>
                 </Flex>
-                <Flex align={"center"}>
-                    <div style={{width: 180}}>Решение</div>
-                    <Input placeholder={"Заполняется исполнителем"} value={solution ?? ""} onChange={(e) => setSolution(e.target.value)}/>
-                </Flex>
-                <Flex align={"center"}>
-                    <div style={{width: 180}}>Статус</div>
-                    <Select
-                        value={selectedStatus}
-                        placeholder={"Выберите статус"}
-                        style={{width: '100%'}}
-                        onChange={(id) => setSelectedStatus(id)}
-                        options={statuses.map((status: StatusModel) => ({value: status.id, label: status.name}))}
-                    />
-                </Flex>
+                {props.selectedRequest !== null &&
+                    <Flex align={"center"}>
+                        <div style={{width: 180}}>Статус</div>
+                        <Select
+                            value={selectedStatus}
+                            placeholder={"Выберите статус"}
+                            style={{width: '100%'}}
+                            onChange={(id) => setSelectedStatus(id)}
+                            options={statuses.map((status: StatusModel) => ({value: status.id, label: status.name}))}
+                        />
+                    </Flex>
+                }
                 <Flex align={"center"}>
                     <div style={{width: 180}}>Приоритет заявки</div>
                     <Select
@@ -167,7 +183,7 @@ export const RequestModal = (props: ModalProps) => {
                         placeholder={"Выберите заявителя"}
                         style={{width: '100%'}}
                         onChange={(id) => setSelectedClient(id)}
-                        options={users.map((user: UserModel) => ({value: user.id, label: `${user.surname} ${user.name[0]}. ${user.secondName[0]}.`}))}
+                        options={users.filter((user: UserModel) => user.role.id === 2).map((user: UserModel) => ({value: user.id, label: `${user.surname} ${user.name[0]}. ${user.secondName[0]}.`}))}
                     />
                 </Flex>
                 <Flex align={"center"}>
@@ -177,7 +193,18 @@ export const RequestModal = (props: ModalProps) => {
                         placeholder={"Выберите ассистента"}
                         style={{width: '100%'}}
                         onChange={(id) => setSelectedAssistant(id)}
-                        options={users.map((user: UserModel) => ({value: user.id, label: `${user.surname} ${user.name[0]}. ${user.secondName[0]}.`}))}
+                        options={users.filter((user: UserModel) => user.role.id === 3).map((user: UserModel) => ({value: user.id, label: `${user.surname} ${user.name[0]}. ${user.secondName[0]}.`}))}
+                    />
+                </Flex>
+                <Flex align={"center"}>
+                    <div style={{width: 180}}>Группа</div>
+                    <Select
+                        disabled={isGetGroupsLoading}
+                        value={selectedGroup}
+                        placeholder={"Выберите группу"}
+                        style={{width: '100%'}}
+                        onChange={(id) => setSelectedGroup(id)}
+                        options={groups?.map((group:GroupModel) => ({value: group.id, label: group.name}))}
                     />
                 </Flex>
                 <Flex align={"center"}>
@@ -187,17 +214,27 @@ export const RequestModal = (props: ModalProps) => {
                         placeholder={"Выберите исполнитель"}
                         style={{width: '100%'}}
                         onChange={(id) => setSelectedExecutor(id)}
-                        options={users.map((user: UserModel) => ({value: user.id, label: `${user.surname} ${user.name[0]}. ${user.secondName[0]}.`}))}
+                        options={users.filter((user: UserModel) => user.role.id === 4 && user.group.id === selectedGroup).map((user: UserModel) => ({value: user.id, label: `${user.surname} ${user.name[0]}. ${user.secondName[0]}.`}))}
                     />
                 </Flex>
-                <Flex align={"center"}>
-                    <div style={{width: 180}}>Дата создания</div>
-                    <DatePicker format={dateTimeFormat} style={{width: '100%'}} value={createDate} onChange={(date:Dayjs) => setCreateDate(date)}/>
-                </Flex>
-                <Flex align={"center"}>
-                    <div style={{width: 180}}>Дэдлайн</div>
-                    <DatePicker format={dateTimeFormat} style={{width: '100%'}} value={deadlineDate} onChange={(date:Dayjs) => setDeadlineDate(date)}/>
-                </Flex>
+                {props.selectedRequest !== null &&
+                    <>
+                        <Flex align={"center"}>
+                            <div style={{width: 180}}>Дата создания</div>
+                            <DatePicker disabled={true} format={dateTimeFormat} style={{width: '100%'}} value={createDate}/>
+                        </Flex>
+                        <Flex align={"center"}>
+                            <div style={{width: 180}}>Дэдлайн</div>
+                            <DatePicker disabled={true} format={dateTimeFormat} style={{width: '100%'}} value={deadlineDate}/>
+                        </Flex>
+                    </>
+                }
+                {props.selectedRequest !== null &&
+                    <Flex align={"center"}>
+                        <div style={{width: 180}}>Решение</div>
+                        <Input placeholder={"Заполняется исполнителем"} value={solution ?? ""} onChange={(e) => setSolution(e.target.value)}/>
+                    </Flex>
+                }
                 <Flex align={"center"}>
                     <div style={{width: 180}}>Примечание</div>
                     <Input placeholder={"Введите примечание"} value={comment ?? ""} onChange={(e) => setComment(e.target.value)}/>

@@ -80,7 +80,7 @@ const RequestScreen: React.FC = () => {
     return (
         <>
             <Flex vertical={true}>
-                {requestModalVisible && <RequestModal selectedRequest={selectedRequest} visible={requestModalVisible} setVisible={setRequestModalVisible} refresh={getAll}/>}
+                {requestModalVisible && <RequestModal setSelectedRequest={setSelectedRequest} selectedRequest={selectedRequest} visible={requestModalVisible} setVisible={setRequestModalVisible} refresh={getAll}/>}
                 {redirectToLogin && <Navigate to="/login" replace={false}/>}
                 <Button type={'primary'} onClick={() => setRequestModalVisible(true)} style={{width: 100, margin: 10}}>Добавить</Button>
                 <Table

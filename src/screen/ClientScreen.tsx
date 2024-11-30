@@ -81,7 +81,7 @@ export const ClientScreen = () => {
     return (
         <div style={{minHeight: window.innerHeight}}>
             {redirectToLogin && <Navigate to="/login" replace={false}/>}
-            {visibleRequestModal && <RequestModal selectedRequest={selectedRequest} visible={visibleRequestModal} setVisible={setVisibleRequestModal} refresh={getMyRequests} />}
+            {visibleRequestModal && <RequestModal setSelectedRequest={setSelectedRequest} selectedRequest={selectedRequest} visible={visibleRequestModal} setVisible={setVisibleRequestModal} refresh={getMyRequests} />}
             <Menu className="centeredItemsTop" style={{marginBottom: 5, display: 'flex', justifyContent: 'center'}}
                   defaultValue={'filter'} onClick={tonTopNavigationClick}
                   selectedKeys={[currentTopMenuItem]} mode="horizontal" items={topNavigationItems}/>
@@ -105,7 +105,7 @@ export const ClientScreen = () => {
                     </div>
                     :
                     <>{!isMobile ?
-                        <Flex wrap={true} justify={'flex-start'} style={{marginTop: 15}}>
+                        <Flex wrap={true} justify={'center'} style={{marginTop: 15}}>
                             {requests?.map((request:RequestModel) =>
                                 <RequestCard setVisibleRequestModal={setVisibleRequestModal}
                                              setSelectedRequest={setSelectedRequest}
